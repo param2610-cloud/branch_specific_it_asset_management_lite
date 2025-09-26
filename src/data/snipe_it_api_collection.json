@@ -1,0 +1,3130 @@
+{
+  "info": {
+    "name": "Snipe-IT API Collection",
+    "description": "Complete API collection for Snipe-IT asset management system",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{api_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://your-snipe-it-instance.com/api/v1",
+      "type": "string",
+      "description": "Base URL for your Snipe-IT API instance"
+    },
+    {
+      "key": "api_token",
+      "value": "YOUR_API_TOKEN_HERE",
+      "type": "string",
+      "description": "Your Snipe-IT API Bearer token"
+    }
+  ],
+  "item": [
+    {
+      "name": "Hardware/Assets",
+      "description": "Endpoints for managing hardware assets",
+      "item": [
+        {
+          "name": "List Assets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/hardware?limit=50&offset=0&sort=created_at&order=desc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "hardware"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Number of results to return"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Offset for pagination"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search term",
+                  "disabled": true
+                },
+                {
+                  "key": "order_number",
+                  "value": "",
+                  "description": "Filter by order number",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "created_at",
+                  "description": "Sort column"
+                },
+                {
+                  "key": "order",
+                  "value": "desc",
+                  "description": "Sort order (asc/desc)"
+                },
+                {
+                  "key": "model_id",
+                  "value": "",
+                  "description": "Filter by model ID",
+                  "disabled": true
+                },
+                {
+                  "key": "category_id",
+                  "value": "",
+                  "description": "Filter by category ID",
+                  "disabled": true
+                },
+                {
+                  "key": "manufacturer_id",
+                  "value": "",
+                  "description": "Filter by manufacturer ID",
+                  "disabled": true
+                },
+                {
+                  "key": "company_id",
+                  "value": "",
+                  "description": "Filter by company ID",
+                  "disabled": true
+                },
+                {
+                  "key": "location_id",
+                  "value": "",
+                  "description": "Filter by location ID",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "Filter by status (RTD, Deployed, Undeployable, Deleted, Archived, Requestable)",
+                  "disabled": true
+                },
+                {
+                  "key": "status_id",
+                  "value": "",
+                  "description": "Filter by status ID",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get a list of all hardware assets with optional filtering and pagination"
+          }
+        },
+        {
+          "name": "Get Asset by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/hardware/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "hardware",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific asset by ID"
+          }
+        },
+        {
+          "name": "Create Asset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Asset\",\n  \"asset_tag\": \"AT001\",\n  \"model_id\": 1,\n  \"status_id\": 1,\n  \"serial\": \"SN123456\",\n  \"purchase_date\": \"2023-01-01\",\n  \"purchase_cost\": 1000.00,\n  \"notes\": \"Asset notes\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/hardware",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "hardware"
+              ]
+            },
+            "description": "Create a new hardware asset"
+          }
+        },
+        {
+          "name": "Update Asset",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Asset\",\n  \"asset_tag\": \"AT001\",\n  \"model_id\": 1,\n  \"status_id\": 1,\n  \"serial\": \"SN123456\",\n  \"purchase_date\": \"2023-01-01\",\n  \"purchase_cost\": 1000.00,\n  \"notes\": \"Updated asset notes\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/hardware/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "hardware",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing asset"
+          }
+        },
+        {
+          "name": "Delete Asset",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/hardware/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "hardware",
+                "{id}"
+              ]
+            },
+            "description": "Delete an asset"
+          }
+        },
+        {
+          "name": "Checkout Asset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assigned_to\": 1,\n  \"checkout_to_type\": \"user\",\n  \"expected_checkin\": \"2023-12-31\",\n  \"note\": \"Checkout note\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/hardware/{id}/checkout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "hardware",
+                "{id}",
+                "checkout"
+              ]
+            },
+            "description": "Checkout an asset to a user"
+          }
+        },
+        {
+          "name": "Checkin Asset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Checkin note\",\n  \"location_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/hardware/{id}/checkin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "hardware",
+                "{id}",
+                "checkin"
+              ]
+            },
+            "description": "Checkin an asset"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "description": "Endpoints for managing users",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users?limit=50&offset=0&sort=created_at&order=desc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Number of results to return"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Offset for pagination"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search term",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "created_at",
+                  "description": "Sort column"
+                },
+                {
+                  "key": "order",
+                  "value": "desc",
+                  "description": "Sort order (asc/desc)"
+                },
+                {
+                  "key": "first_name",
+                  "value": "",
+                  "description": "Filter by first name",
+                  "disabled": true
+                },
+                {
+                  "key": "last_name",
+                  "value": "",
+                  "description": "Filter by last name",
+                  "disabled": true
+                },
+                {
+                  "key": "username",
+                  "value": "",
+                  "description": "Filter by username",
+                  "disabled": true
+                },
+                {
+                  "key": "email",
+                  "value": "",
+                  "description": "Filter by email",
+                  "disabled": true
+                },
+                {
+                  "key": "employee_num",
+                  "value": "",
+                  "description": "Filter by employee number",
+                  "disabled": true
+                },
+                {
+                  "key": "deleted",
+                  "value": "false",
+                  "description": "Include deleted users"
+                },
+                {
+                  "key": "all",
+                  "value": "false",
+                  "description": "Include all users"
+                },
+                {
+                  "key": "company_id",
+                  "value": "",
+                  "description": "Filter by company ID",
+                  "disabled": true
+                },
+                {
+                  "key": "location_id",
+                  "value": "",
+                  "description": "Filter by location ID",
+                  "disabled": true
+                },
+                {
+                  "key": "department_id",
+                  "value": "",
+                  "description": "Filter by department ID",
+                  "disabled": true
+                },
+                {
+                  "key": "group_id",
+                  "value": "",
+                  "description": "Filter by group ID",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get a list of all users with optional filtering and pagination"
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific user by ID"
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"username\": \"john.doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\",\n  \"employee_num\": \"EMP001\",\n  \"company_id\": 1,\n  \"location_id\": 1,\n  \"department_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "Create a new user"
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"username\": \"john.doe\",\n  \"email\": \"john.doe@example.com\",\n  \"employee_num\": \"EMP001\",\n  \"company_id\": 1,\n  \"location_id\": 1,\n  \"department_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing user"
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{id}"
+              ]
+            },
+            "description": "Delete a user"
+          }
+        },
+        {
+          "name": "Get User Assets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{id}/assets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{id}",
+                "assets"
+              ]
+            },
+            "description": "Get assets assigned to a specific user"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Companies",
+      "description": "Endpoints for managing companies",
+      "item": [
+        {
+          "name": "List Companies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "",
+                  "description": "Filter by company name",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get a list of all companies"
+          }
+        },
+        {
+          "name": "Get Company by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific company by ID"
+          }
+        },
+        {
+          "name": "Create Company",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Company\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/companies",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies"
+              ]
+            },
+            "description": "Create a new company"
+          }
+        },
+        {
+          "name": "Update Company",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Company\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/companies/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing company"
+          }
+        },
+        {
+          "name": "Delete Company",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/companies/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "companies",
+                "{id}"
+              ]
+            },
+            "description": "Delete a company"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Licenses",
+      "description": "Endpoints for managing software licenses",
+      "item": [
+        {
+          "name": "List Licenses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/licenses?limit=50&offset=0&sort=created_at&order=desc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "licenses"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Number of results to return"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Offset for pagination"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search term",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "created_at",
+                  "description": "Sort column"
+                },
+                {
+                  "key": "order",
+                  "value": "desc",
+                  "description": "Sort order (asc/desc)"
+                },
+                {
+                  "key": "name",
+                  "value": "",
+                  "description": "Filter by license name",
+                  "disabled": true
+                },
+                {
+                  "key": "product_key",
+                  "value": "",
+                  "description": "Filter by product key",
+                  "disabled": true
+                },
+                {
+                  "key": "order_number",
+                  "value": "",
+                  "description": "Filter by order number",
+                  "disabled": true
+                },
+                {
+                  "key": "purchase_order",
+                  "value": "",
+                  "description": "Filter by purchase order",
+                  "disabled": true
+                },
+                {
+                  "key": "license_name",
+                  "value": "",
+                  "description": "Filter by license name",
+                  "disabled": true
+                },
+                {
+                  "key": "license_email",
+                  "value": "",
+                  "description": "Filter by license email",
+                  "disabled": true
+                },
+                {
+                  "key": "manufacturer_id",
+                  "value": "",
+                  "description": "Filter by manufacturer ID",
+                  "disabled": true
+                },
+                {
+                  "key": "supplier_id",
+                  "value": "",
+                  "description": "Filter by supplier ID",
+                  "disabled": true
+                },
+                {
+                  "key": "category_id",
+                  "value": "",
+                  "description": "Filter by category ID",
+                  "disabled": true
+                },
+                {
+                  "key": "expand",
+                  "value": "false",
+                  "description": "Include detailed information"
+                },
+                {
+                  "key": "deleted",
+                  "value": "",
+                  "description": "Include deleted licenses",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get a list of all licenses with optional filtering and pagination"
+          }
+        },
+        {
+          "name": "Get License by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/licenses/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "licenses",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific license by ID"
+          }
+        },
+        {
+          "name": "Create License",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Software License\",\n  \"serial\": \"LICENSE-KEY-123\",\n  \"seats\": 10,\n  \"category_id\": 1,\n  \"manufacturer_id\": 1,\n  \"supplier_id\": 1,\n  \"purchase_date\": \"2023-01-01\",\n  \"purchase_cost\": 500.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/licenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "licenses"
+              ]
+            },
+            "description": "Create a new license"
+          }
+        },
+        {
+          "name": "Update License",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Software License\",\n  \"serial\": \"LICENSE-KEY-123\",\n  \"seats\": 15,\n  \"category_id\": 1,\n  \"manufacturer_id\": 1,\n  \"supplier_id\": 1,\n  \"purchase_date\": \"2023-01-01\",\n  \"purchase_cost\": 750.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/licenses/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "licenses",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing license"
+          }
+        },
+        {
+          "name": "Delete License",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/licenses/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "licenses",
+                "{id}"
+              ]
+            },
+            "description": "Delete a license"
+          }
+        },
+        {
+          "name": "Checkout License Seat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assigned_to\": 1,\n  \"note\": \"License checkout note\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/licenses/{id}/checkout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "licenses",
+                "{id}",
+                "checkout"
+              ]
+            },
+            "description": "Checkout a license seat to a user"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "description": "Endpoints for managing asset categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "description": "Get a list of all categories"
+          }
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific category by ID"
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Category\",\n  \"category_type\": \"asset\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "description": "Create a new category"
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Category\",\n  \"category_type\": \"asset\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categories/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing category"
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "{id}"
+              ]
+            },
+            "description": "Delete a category"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Locations",
+      "description": "Endpoints for managing locations",
+      "item": [
+        {
+          "name": "List Locations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/locations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "locations"
+              ]
+            },
+            "description": "Get a list of all locations"
+          }
+        },
+        {
+          "name": "Get Location by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/locations/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "locations",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific location by ID"
+          }
+        },
+        {
+          "name": "Create Location",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Location\",\n  \"address\": \"123 Main St\",\n  \"city\": \"City\",\n  \"state\": \"State\",\n  \"country\": \"Country\",\n  \"zip\": \"12345\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/locations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "locations"
+              ]
+            },
+            "description": "Create a new location"
+          }
+        },
+        {
+          "name": "Update Location",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Location\",\n  \"address\": \"456 Main St\",\n  \"city\": \"City\",\n  \"state\": \"State\",\n  \"country\": \"Country\",\n  \"zip\": \"12345\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/locations/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "locations",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing location"
+          }
+        },
+        {
+          "name": "Delete Location",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/locations/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "locations",
+                "{id}"
+              ]
+            },
+            "description": "Delete a location"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Manufacturers",
+      "description": "Endpoints for managing manufacturers",
+      "item": [
+        {
+          "name": "List Manufacturers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/manufacturers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "manufacturers"
+              ]
+            },
+            "description": "Get a list of all manufacturers"
+          }
+        },
+        {
+          "name": "Get Manufacturer by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/manufacturers/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "manufacturers",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific manufacturer by ID"
+          }
+        },
+        {
+          "name": "Create Manufacturer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Manufacturer\",\n  \"url\": \"https://manufacturer.com\",\n  \"support_url\": \"https://support.manufacturer.com\",\n  \"support_phone\": \"+1-555-123-4567\",\n  \"support_email\": \"support@manufacturer.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/manufacturers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "manufacturers"
+              ]
+            },
+            "description": "Create a new manufacturer"
+          }
+        },
+        {
+          "name": "Update Manufacturer",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Manufacturer\",\n  \"url\": \"https://manufacturer.com\",\n  \"support_url\": \"https://support.manufacturer.com\",\n  \"support_phone\": \"+1-555-123-4567\",\n  \"support_email\": \"support@manufacturer.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/manufacturers/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "manufacturers",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing manufacturer"
+          }
+        },
+        {
+          "name": "Delete Manufacturer",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/manufacturers/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "manufacturers",
+                "{id}"
+              ]
+            },
+            "description": "Delete a manufacturer"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Models",
+      "description": "Endpoints for managing asset models",
+      "item": [
+        {
+          "name": "List Models",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/models",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "models"
+              ]
+            },
+            "description": "Get a list of all asset models"
+          }
+        },
+        {
+          "name": "Get Model by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/models/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "models",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific model by ID"
+          }
+        },
+        {
+          "name": "Create Model",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Model\",\n  \"model_number\": \"MODEL-001\",\n  \"manufacturer_id\": 1,\n  \"category_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/models",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "models"
+              ]
+            },
+            "description": "Create a new asset model"
+          }
+        },
+        {
+          "name": "Update Model",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Model\",\n  \"model_number\": \"MODEL-001\",\n  \"manufacturer_id\": 1,\n  \"category_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/models/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "models",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing model"
+          }
+        },
+        {
+          "name": "Delete Model",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/models/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "models",
+                "{id}"
+              ]
+            },
+            "description": "Delete a model"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Status Labels",
+      "description": "Endpoints for managing status labels",
+      "item": [
+        {
+          "name": "List Status Labels",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/statuslabels",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "statuslabels"
+              ]
+            },
+            "description": "Get a list of all status labels"
+          }
+        },
+        {
+          "name": "Get Status Label by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/statuslabels/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "statuslabels",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific status label by ID"
+          }
+        },
+        {
+          "name": "Create Status Label",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Status\",\n  \"type\": \"deployable\",\n  \"color\": \"#007bff\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/statuslabels",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "statuslabels"
+              ]
+            },
+            "description": "Create a new status label"
+          }
+        },
+        {
+          "name": "Update Status Label",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Status\",\n  \"type\": \"deployable\",\n  \"color\": \"#28a745\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/statuslabels/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "statuslabels",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing status label"
+          }
+        },
+        {
+          "name": "Delete Status Label",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/statuslabels/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "statuslabels",
+                "{id}"
+              ]
+            },
+            "description": "Delete a status label"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Suppliers",
+      "description": "Endpoints for managing suppliers",
+      "item": [
+        {
+          "name": "List Suppliers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/suppliers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "suppliers"
+              ]
+            },
+            "description": "Get a list of all suppliers"
+          }
+        },
+        {
+          "name": "Get Supplier by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/suppliers/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "suppliers",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific supplier by ID"
+          }
+        },
+        {
+          "name": "Create Supplier",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Supplier\",\n  \"address\": \"123 Supplier St\",\n  \"city\": \"City\",\n  \"state\": \"State\",\n  \"country\": \"Country\",\n  \"zip\": \"12345\",\n  \"phone\": \"+1-555-123-4567\",\n  \"email\": \"contact@supplier.com\",\n  \"url\": \"https://supplier.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/suppliers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "suppliers"
+              ]
+            },
+            "description": "Create a new supplier"
+          }
+        },
+        {
+          "name": "Update Supplier",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Supplier\",\n  \"address\": \"456 Supplier St\",\n  \"city\": \"City\",\n  \"state\": \"State\",\n  \"country\": \"Country\",\n  \"zip\": \"12345\",\n  \"phone\": \"+1-555-123-4567\",\n  \"email\": \"contact@supplier.com\",\n  \"url\": \"https://supplier.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/suppliers/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "suppliers",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing supplier"
+          }
+        },
+        {
+          "name": "Delete Supplier",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/suppliers/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "suppliers",
+                "{id}"
+              ]
+            },
+            "description": "Delete a supplier"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Accessories",
+      "description": "Endpoints for managing accessories",
+      "item": [
+        {
+          "name": "List Accessories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/accessories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "accessories"
+              ]
+            },
+            "description": "Get a list of all accessories"
+          }
+        },
+        {
+          "name": "Get Accessory by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/accessories/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "accessories",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific accessory by ID"
+          }
+        },
+        {
+          "name": "Create Accessory",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Accessory\",\n  \"category_id\": 1,\n  \"manufacturer_id\": 1,\n  \"supplier_id\": 1,\n  \"location_id\": 1,\n  \"qty\": 10,\n  \"purchase_date\": \"2023-01-01\",\n  \"purchase_cost\": 50.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/accessories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "accessories"
+              ]
+            },
+            "description": "Create a new accessory"
+          }
+        },
+        {
+          "name": "Update Accessory",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Accessory\",\n  \"category_id\": 1,\n  \"manufacturer_id\": 1,\n  \"supplier_id\": 1,\n  \"location_id\": 1,\n  \"qty\": 15,\n  \"purchase_date\": \"2023-01-01\",\n  \"purchase_cost\": 75.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/accessories/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "accessories",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing accessory"
+          }
+        },
+        {
+          "name": "Delete Accessory",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/accessories/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "accessories",
+                "{id}"
+              ]
+            },
+            "description": "Delete an accessory"
+          }
+        },
+        {
+          "name": "Checkout Accessory",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assigned_to\": 1,\n  \"note\": \"Accessory checkout note\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/accessories/{id}/checkout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "accessories",
+                "{id}",
+                "checkout"
+              ]
+            },
+            "description": "Checkout an accessory to a user"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Components",
+      "description": "Endpoints for managing components",
+      "item": [
+        {
+          "name": "List Components",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/components",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "components"
+              ]
+            },
+            "description": "Get a list of all components"
+          }
+        },
+        {
+          "name": "Get Component by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/components/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "components",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific component by ID"
+          }
+        },
+        {
+          "name": "Create Component",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Component\",\n  \"category_id\": 1,\n  \"location_id\": 1,\n  \"qty\": 5,\n  \"purchase_date\": \"2023-01-01\",\n  \"purchase_cost\": 25.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/components",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "components"
+              ]
+            },
+            "description": "Create a new component"
+          }
+        },
+        {
+          "name": "Update Component",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Component\",\n  \"category_id\": 1,\n  \"location_id\": 1,\n  \"qty\": 8,\n  \"purchase_date\": \"2023-01-01\",\n  \"purchase_cost\": 40.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/components/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "components",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing component"
+          }
+        },
+        {
+          "name": "Delete Component",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/components/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "components",
+                "{id}"
+              ]
+            },
+            "description": "Delete a component"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consumables",
+      "description": "Endpoints for managing consumables",
+      "item": [
+        {
+          "name": "List Consumables",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/consumables",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "consumables"
+              ]
+            },
+            "description": "Get a list of all consumables"
+          }
+        },
+        {
+          "name": "Get Consumable by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/consumables/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "consumables",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific consumable by ID"
+          }
+        },
+        {
+          "name": "Create Consumable",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Consumable\",\n  \"category_id\": 1,\n  \"manufacturer_id\": 1,\n  \"location_id\": 1,\n  \"qty\": 20,\n  \"purchase_date\": \"2023-01-01\",\n  \"purchase_cost\": 100.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/consumables",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "consumables"
+              ]
+            },
+            "description": "Create a new consumable"
+          }
+        },
+        {
+          "name": "Update Consumable",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Consumable\",\n  \"category_id\": 1,\n  \"manufacturer_id\": 1,\n  \"location_id\": 1,\n  \"qty\": 25,\n  \"purchase_date\": \"2023-01-01\",\n  \"purchase_cost\": 125.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/consumables/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "consumables",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing consumable"
+          }
+        },
+        {
+          "name": "Delete Consumable",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/consumables/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "consumables",
+                "{id}"
+              ]
+            },
+            "description": "Delete a consumable"
+          }
+        },
+        {
+          "name": "Checkout Consumable",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assigned_to\": 1,\n  \"note\": \"Consumable checkout note\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/consumables/{id}/checkout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "consumables",
+                "{id}",
+                "checkout"
+              ]
+            },
+            "description": "Checkout a consumable to a user"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Departments",
+      "description": "Endpoints for managing departments",
+      "item": [
+        {
+          "name": "List Departments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/departments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "departments"
+              ]
+            },
+            "description": "Get a list of all departments"
+          }
+        },
+        {
+          "name": "Get Department by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/departments/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "departments",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific department by ID"
+          }
+        },
+        {
+          "name": "Create Department",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Department\",\n  \"company_id\": 1,\n  \"location_id\": 1,\n  \"manager_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/departments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "departments"
+              ]
+            },
+            "description": "Create a new department"
+          }
+        },
+        {
+          "name": "Update Department",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Department\",\n  \"company_id\": 1,\n  \"location_id\": 1,\n  \"manager_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/departments/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "departments",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing department"
+          }
+        },
+        {
+          "name": "Delete Department",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/departments/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "departments",
+                "{id}"
+              ]
+            },
+            "description": "Delete a department"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "description": "Endpoints for generating reports",
+      "item": [
+        {
+          "name": "Activity Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/activity?limit=50&offset=0&order=desc&sort=created_at",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "activity"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Number of results to return"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Offset for pagination"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search term",
+                  "disabled": true
+                },
+                {
+                  "key": "target_type",
+                  "value": "",
+                  "description": "Target type (App\\Models\\User, etc.)",
+                  "disabled": true
+                },
+                {
+                  "key": "target_id",
+                  "value": "",
+                  "description": "Target ID",
+                  "disabled": true
+                },
+                {
+                  "key": "item_type",
+                  "value": "",
+                  "description": "Item type (asset, accessory, consumable, etc.)",
+                  "disabled": true
+                },
+                {
+                  "key": "item_id",
+                  "value": "",
+                  "description": "Item ID",
+                  "disabled": true
+                },
+                {
+                  "key": "action_type",
+                  "value": "",
+                  "description": "Action type (checkout, checkin from, update, etc.)",
+                  "disabled": true
+                },
+                {
+                  "key": "order",
+                  "value": "desc",
+                  "description": "Sort order (asc/desc)"
+                },
+                {
+                  "key": "sort",
+                  "value": "created_at",
+                  "description": "Sort column"
+                }
+              ]
+            },
+            "description": "Get activity report with optional filtering"
+          }
+        },
+        {
+          "name": "Asset Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/assets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "assets"
+              ]
+            },
+            "description": "Generate asset report"
+          }
+        },
+        {
+          "name": "License Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/licenses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "licenses"
+              ]
+            },
+            "description": "Generate license report"
+          }
+        },
+        {
+          "name": "Unaccepted Assets Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/unaccepted_assets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "unaccepted_assets"
+              ]
+            },
+            "description": "Get report of unaccepted assets"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "description": "Endpoints for managing settings and system information",
+      "item": [
+        {
+          "name": "Get Version",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/version",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "version"
+              ]
+            },
+            "description": "Get current version and hash of Snipe-IT"
+          }
+        },
+        {
+          "name": "List Backups",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/settings/backups",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "settings",
+                "backups"
+              ]
+            },
+            "description": "List backup files"
+          }
+        },
+        {
+          "name": "Create Backup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/settings/backups",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "settings",
+                "backups"
+              ]
+            },
+            "description": "Create a new backup"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Custom Fields",
+      "description": "Endpoints for managing custom fields",
+      "item": [
+        {
+          "name": "List Custom Fields",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fields",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fields"
+              ]
+            },
+            "description": "Get a list of all custom fields"
+          }
+        },
+        {
+          "name": "Get Custom Field by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fields/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fields",
+                "{id}"
+              ]
+            },
+            "description": "Get details of a specific custom field by ID"
+          }
+        },
+        {
+          "name": "Create Custom Field",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Custom Field Name\",\n  \"element\": \"text\",\n  \"required\": false,\n  \"field_values\": \"\",\n  \"show_in_email\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/fields",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fields"
+              ]
+            },
+            "description": "Create a new custom field"
+          }
+        },
+        {
+          "name": "Update Custom Field",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Custom Field Name\",\n  \"element\": \"text\",\n  \"required\": false,\n  \"field_values\": \"\",\n  \"show_in_email\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/fields/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fields",
+                "{id}"
+              ]
+            },
+            "description": "Update an existing custom field"
+          }
+        },
+        {
+          "name": "Delete Custom Field",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fields/{id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fields",
+                "{id}"
+              ]
+            },
+            "description": "Delete a custom field"
+          }
+        }
+      ]
+    }
+  ]
+}
