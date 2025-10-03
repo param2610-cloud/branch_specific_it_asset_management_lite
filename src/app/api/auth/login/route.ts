@@ -17,7 +17,11 @@ export const POST= async (req:NextRequest)=>{
 
         const response = await loginUser(result.data.username,result.data.password);
         if(response.status==200){
-            return NextResponse.json(response, {status: 200});
+            const responseObject= NextResponse.json(response, {status: 200});
+            if (response.accessToken) {
+                responseObject.cookies.set('accessToken', response.accessToken, { httpOnly: true,secure:true, path: '/' ,maxAge:60*60*24*7});
+            }
+            return responseObject;
         }
         if(response.status==401){
             return NextResponse.json({message:"User is unauthorized."}, {status: 401});

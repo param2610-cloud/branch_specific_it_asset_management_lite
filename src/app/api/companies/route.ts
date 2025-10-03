@@ -20,7 +20,7 @@ export async function GET(req:NextRequest,res:NextResponse){
         const params = Object.fromEntries(url.searchParams);
         const result = await ApiDict.getCompanies(userData.secret, params);
         if (result.success) {
-            return new Response(JSON.stringify(result.data), {status: 200});
+            return new Response(JSON.stringify(result.data.rows), {status: 200});
         } else {
             return new Response(JSON.stringify({message:`API Error: ${result.error}`}), {status: 500});
         }

@@ -1,4 +1,5 @@
-import { verifyToken } from "@/lib/token/token";
+import { ApiDict } from "@/data/snipe_it_api/ApiDict";
+import { secretKeyFetch, verifyToken } from "@/lib/token/token";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET=async(req:NextRequest,res:NextResponse)=>{
@@ -8,10 +9,19 @@ export const GET=async(req:NextRequest,res:NextResponse)=>{
             return NextResponse.json({message:"No token found"}, {status: 401});
         }
         const decoded = await verifyToken(token);
-        if(!decoded){
+        if(!decoded || typeof decoded !== 'object' || !('username' in decoded)){
             return NextResponse.json({message:"Invalid token"}, {status: 401});
         }
-        return NextResponse.json({message:"Token is valid", user:decoded}, {status: 200});
+        const secretData = await secretKeyFetch(token);
+        if(!secretData || typeof secretData !== 'object' || !secretData.secret){
+            return NextResponse.json({message:"User data not found"}, {status: 403});
+        }
+        const userData = await ApiDict.findUserByUsername(secretData.secret, decoded.username);
+        if (userData.success) {
+            return NextResponse.json({message:"Token is valid", user: userData.data.rows[0]}, {status: 200});
+        } else {
+            return NextResponse.json({message:"Failed to fetch user data"}, {status: 500});
+        }
     } catch (error) {
 
         console.log(error)

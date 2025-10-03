@@ -92,6 +92,15 @@ export const ApiDict= {
         } catch (error:any) {
             return {success:false,error:error.response?.data?.message || error. message};
         }
+    },
+    async findUserByUsername(secret:string, username:string){
+        const axiosInstance = createSnipeItAxios(secret);
+        try {
+            const response = await axiosInstance.get('/users', { params: { username } });
+            return {success:true,data:response.data};
+        } catch (error:any) {
+            return {success:false,error:error.response?.data?.message || error. message};
+        }
     }
 
 }

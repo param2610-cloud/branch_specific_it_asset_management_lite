@@ -19,11 +19,14 @@ export async function GET(req: NextRequest) {
     }
 
     const url = new URL(req.url);
-    const params = Object.fromEntries(url.searchParams);
+    const username = url.searchParams.get('username');
+    if (!username) {
+        return new Response("Username parameter required", { status: 400 });
+    }
 
-    const result = await ApiDict.allAssetFetch(userData.secret, userData.locationId, params);
+    const result = await ApiDict.findUserByUsername(userData.secret, username);
     if (result.success) {
-        return new Response(JSON.stringify(result.data.rows), { status: 200 });
+        return new Response(JSON.stringify(result.data), { status: 200 });
     } else {
         return new Response(`API Error: ${result.error}`, { status: 500 });
     }
