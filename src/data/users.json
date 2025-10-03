@@ -1,9 +1,9 @@
 [
   {
     "name": "Soumen Pal",
-    "email": "mumbai@aumcap.com",
+    "email": "admin@aumcap.com",
     "username": "aumuser",
-    "location": "Kolkata",
+    "locationId": 1,
     "password": "$2a$12$h2XrnzgfnpmN6N./AlaIk.eTPcxUMxaTb2Vkq58ykRTK1XPO5AqyK",
     "secret": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiY2YzNzBlNTdiOWIwODYzODQwYzJjNzliMDQ0MzMwMDVjZDhhNjRhZTUzZWVlNjkxM2JjNDY2ZGQ0MWRjNzY0MmIwOGQ0M2YxY2NiNGIwNTgiLCJpYXQiOjE3NTg4NzA4NDUuNjcwMTM5LCJuYmYiOjE3NTg4NzA4NDUuNjcwMTQxLCJleHAiOjIyMzIyNTY0NDUuNjYzMDM0LCJzdWIiOiI3OTIiLCJzY29wZXMiOltdfQ.J1jwzXOkI5VKeZ56T7D98ddGblpo1sju4xF40XJH6opX7lQvPQm2tEKgN3NmxU092SqC1fCQ4RxY_DIAhwtmEDpwsTG5q5KsmYIaM5r50yvWt-mlUS9b_EBNffog1frPN1PmEcJbOhPr39-j_qo_JNQ00dDJ3nWJ_C_xTHJ7bozFYhyKhrzZ_0ACWa46J76nRGnS9b9oxu4f82tjpOfkKSZ0qFInPF1KzlzxSscLkWz13mEtxWnQv1dlkCH8pmasW1ex-ZGjx6kaHu4UXw1HhBRRfWnrIBiLQ7RhwjZ3fEmkYV-lF5HPSaoZfeRmfOJtrHuLO-FbzEIs7e61hJHmaahSrl1y-ElLbTBVbc1TbI92au6tIea0Hxigvv7PW4Imd5U1Uwd5zZUTSgb6grz1x5OpiFbU-W6mltJLrNPwfLut7M_Eq8--OWYwww6I8-rHlC81MzI00kVTowB6cCUqwJlxzWlFXPHuYpGQ_ngOEZkNTCkYqN9uJhGw5pz1UO0Iqtk4n4aM1dQ-3Ar_JkZyGSFHAttkt_BmA50YceodK7HEzYT0v6Pxz1bsWgQ184Fw8oZGoY8Ew7n0I31Xvi7l7lOoJSoYWUcutCElrxzvlHn07ex50-tA_XdkF6xdltgXAtEkTzTNdwKmGW667jI1OfAWnNYw84e8CJoHwu-a-JA"
   },
@@ -11,7 +11,7 @@
     "name": "admin mumbai",
     "email": "mumbai@aumcap.com",
     "username": "mumadmin",
-    "location": "MUMBAI",
+    "locationId": 37,
     "password": "$2a$12$0ull1Tl/TEGIgsumL7kAmedjcfn5WibG4EPtvXhMEZGZnZmGxvOwq",
     "secret": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiY2YzNzBlNTdiOWIwODYzODQwYzJjNzliMDQ0MzMwMDVjZDhhNjRhZTUzZWVlNjkxM2JjNDY2ZGQ0MWRjNzY0MmIwOGQ0M2YxY2NiNGIwNTgiLCJpYXQiOjE3NTg4NzA4NDUuNjcwMTM5LCJuYmYiOjE3NTg4NzA4NDUuNjcwMTQxLCJleHAiOjIyMzIyNTY0NDUuNjYzMDM0LCJzdWIiOiI3OTIiLCJzY29wZXMiOltdfQ.J1jwzXOkI5VKeZ56T7D98ddGblpo1sju4xF40XJH6opX7lQvPQm2tEKgN3NmxU092SqC1fCQ4RxY_DIAhwtmEDpwsTG5q5KsmYIaM5r50yvWt-mlUS9b_EBNffog1frPN1PmEcJbOhPr39-j_qo_JNQ00dDJ3nWJ_C_xTHJ7bozFYhyKhrzZ_0ACWa46J76nRGnS9b9oxu4f82tjpOfkKSZ0qFInPF1KzlzxSscLkWz13mEtxWnQv1dlkCH8pmasW1ex-ZGjx6kaHu4UXw1HhBRRfWnrIBiLQ7RhwjZ3fEmkYV-lF5HPSaoZfeRmfOJtrHuLO-FbzEIs7e61hJHmaahSrl1y-ElLbTBVbc1TbI92au6tIea0Hxigvv7PW4Imd5U1Uwd5zZUTSgb6grz1x5OpiFbU-W6mltJLrNPwfLut7M_Eq8--OWYwww6I8-rHlC81MzI00kVTowB6cCUqwJlxzWlFXPHuYpGQ_ngOEZkNTCkYqN9uJhGw5pz1UO0Iqtk4n4aM1dQ-3Ar_JkZyGSFHAttkt_BmA50YceodK7HEzYT0v6Pxz1bsWgQ184Fw8oZGoY8Ew7n0I31Xvi7l7lOoJSoYWUcutCElrxzvlHn07ex50-tA_XdkF6xdltgXAtEkTzTNdwKmGW667jI1OfAWnNYw84e8CJoHwu-a-JA"
   },
@@ -19,7 +19,7 @@
     "name": "admin chennai",
     "email": "chennai@aumcap.com",
     "username": "cheadmin",
-    "location": "Chennai",
+    "locationId": 36,
     "password": "$2a$12$/BUJIHgBbYe3gU7WAmJMNuSymithrKuiAvov9sw3m4Pyho8I598mG",
     "secret": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZGRiNGMwYzllMGNkNDI3MDVkZGJiMGUwZGM3MjY3YjNhYTYyMmQ1YWQwOWFiYWE1ZjQ2NzY2YWZkZDdhZjg2MmJiODA1MTNkMmRjNDcxMTQiLCJpYXQiOjE3NTg4NzA4OTAuMTYwMTcxLCJuYmYiOjE3NTg4NzA4OTAuMTYwMTczLCJleHAiOjIyMzIyNTY0OTAuMTU2MzA5LCJzdWIiOiI3OTMiLCJzY29wZXMiOltdfQ.VYFg_EtuN3LMdIPRy5lr_hJPBLTaesTmBa-80Y-lEJUTzvBIj8AKZnMbVTI61B2ilP5GXj9L9P7gMHA7jZn-3OioKcr5M9MjxrXNRZR4x3czc7e1XWMyaUqCJnlNiQti0_gap4Li4Aoo1jdBHOCMPXQRA6c81AHr8PYiDfW8uS3w9pqp-OFNtFXmh5DbF1S-16j1DA9bzD4RQ1ViKuL1ZBI-h7Gjr-dD0fJOY--iOmtlF6N0QsJsy444tnI1vRUDBwU_lfXIXAG9Ca0Oy_9HMtk4_8nUrW5RFh7VvP7vkdcMnP2aB66u0M_tgcTQK0Pk3xlnM8crFu-vvolQ-9bt_ycvpb2ohXd28gxjYzelFHX-UEaawtkzf2AzxIMemp5hRnJU3xIFOHKtgYRCcYCPp_h062uzhYduI1UPSgR4tLWI3kC_0ktBCHWUfILEqhhib73Ie-J7EUhTXqMAsm49o-kl5eajWnSXYosKrnczC7EExyAywauwkqLRJ8JlD-PMgxWs8e1uQQFXv2fA1xEFyHH_UGWutUUkjQCST9-5wmxh5LO8DMaMKCbg4CLf-BnGpLtEDJ9a7F7mJpVTKhtp-Gl9vZ9WseHFsDpR6RL0Ry7ho_mN2zo3FVODIjgl8BfEZF-vC0zjXYufapc_rkSZhAvzeKzGpV0HLEAwEqqLxqs"
   },
@@ -27,7 +27,7 @@
     "name": "admin ahmedabad",
     "email": "ahmedabad@aumcap.com",
     "username": "ahmadmin",
-    "location": "Ahmedabad",
+    "locationId": 31,
     "password": "$2a$12$9BVuiryxPpL7g.KTy.L0auBok9oSp00iN/ehOH.ugPjTbt9NkQ7Gu",
     "secret": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNDUwMTBiMjBjNDEyNzUyMjZmODFjOTgxODk1ODcyZmM5YzYwN2E1MDM0ZjIzZjI5MDE4OTUzNTBiZjcxM2E0Y2M2NTJkYzY5ODMwNDdiYzgiLCJpYXQiOjE3NTg4NzA5OTcuNTMwMzk3LCJuYmYiOjE3NTg4NzA5OTcuNTMwMzk5LCJleHAiOjIyMzIyNTY1OTcuNTI2NDAzLCJzdWIiOiI3OTQiLCJzY29wZXMiOltdfQ.LD6Hz6fl00M7_aWv0xHgqAv0JMUuS7PWLF4SS2W8AzspVg4P8UJ9edPDFgCHVBknB0nW0E2lRfcJxq-A_GyyudDHznKbyM2BcVh8za7kq3jzyela1Cl68offZ5Tz8Ud8QwFAAaClUB9Ridj3-11rAbzxVMOZWjVE-M80t6T1jJdYmax2gZDZbFsMEeYaASyWY7arZB1J8CY4cBrLrd6i63Mj_OGYlZYxFwVi5nmv0vfhR6h-fPNlClPRuPhsWXTq8mo9yJMsUcAfUrqOthQaDMoUSrCs4exGDnG5n9f-ot_HRMZmA3M1pV2-YXpeza-EqTSYXhTbo2d6ARaQVAfNP5i3mTv8UxqGJL2FNKtXBxL-ELZifmW-bLjqBAHdEOTpduUTSSYkizkfkEfFmK9ZGsfZYYXJcWsLzMegt5Uja3h4b_kMBH9ArCqFtxcXpJ6nO9X2NPFIGcqIhGKXhh6MZpY9IPvDAdEAfS8T6wMqkHAU81DQMniOzHqcA9Nyt-XchjlemYyx8lC6SbNOrdTFrlzIFpJLbGVKr4G80cKDht5DN3fbn-6kdYSh-wPGFEfBU3bbNqlkAgKflsoOry-XPmwmjgaAX4gY_Kg8Hxm7_VlV8AiNwjVzDfwPUu0DF6YM9bgOrTP7tYOYlBa7yRj7yPls3R5op1QpKEBUjAUIPRM"
   },
@@ -35,7 +35,7 @@
     "name": "Admin Delhi",
     "email": "delhi@aumcap.com",
     "username": "deladmin",
-    "location": "Delhi",
+    "locationId": 33,
     "password": "$2a$12$Dr7CZsiz4aNczxgt041jqOVAseqIOoJ2lEA638Oofcm8/bJNBylBm",
     "secret": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiOWU3MmQ0NmNmNWJiZTg0NWRkMWFkOTI4MTczNzU3MWZiMDZhZTM1YTRkMWVjYzcwMWVmMzZkNGEzOGU3N2I0OGE1ZDY1Yjk2ZTk3YzEwNjAiLCJpYXQiOjE3NTg4NzEwOTcuMzAxNjUzLCJuYmYiOjE3NTg4NzEwOTcuMzAxNjU1LCJleHAiOjIyMzIyNTY2OTcuMjk3NjA4LCJzdWIiOiI3OTUiLCJzY29wZXMiOltdfQ.ORAyeZvwtDsdz5s0nrDAu_H-O6CoejWL4DQnGB45jsR2L-wd7m39Q3K2llBlKXB_K-y8etq_lMNk5qNuE6887TIi1TurgUjdgOA2chNfZ7E78peWaJFXSFZCDZ1qUlOOTNuSjZiFv07bZE5u7eUjbqIvYDliD1HNXhQdxEbTO5IK65SE5ulySkKePnvz-lWChU41lrsj_ozHMlgzprz01zlgV8PWGVWsA_O201-nX70i-3yW_Yrf6sFhioFgLWbIBx9_T210yiXmJIQ5FbJD3pKIkhkWDRUZyajE85w1NmdYBcChLsqJTblJUFnXmnx7sGgNBTQS2GwGNc47j9fD5pgIg8bcxmu702gJGEte1oUj3g7u1H6fQ9ukKCtPZG9QW2aberJGuWAGTY8dtubOaKi4FKgg33Lc5ya7ktrqOlQipkxP6c_-UgfjFjuhd8hlmNCxeHZ2lgOE0OajwbF17AKRPgv9a_iPJmPfbVt5MZIFqYLi6BOqAqWWNCKp51RLCJDkt_yWxQG388zoiop_q1HYJUL5iw7h1tyg9p3GCV90L1XWnZ9eOvGs2bmVbpDGckF2r9j8nyMHniB0v0ILo8s6_lf0lby-rdmFq46_9j6rexOdE9hYuUURBOZxdbiIrsUfGrqxjBUtspQjkITH8vjx0CBcpzYwcrQOIdBcAjI"
   },
@@ -43,7 +43,7 @@
     "name": "Admin Bangalore",
     "email": "bangalore@aumcap.com",
     "username": "banadmin",
-    "location": "Bangalore",
+    "locationId": 30,
     "password": "$2a$12$xl722mNThmUBl/b7rvvFBe.ksVbU0hm2m7biuYbn5c4z24y9m5aYC",
     "secret": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZmQxYmI2YTA1ODFiZTcwM2Q0Yjk0YTlhYzlkYTg0NDkwNjllMjU3YzZjOGE4ZGExODM0NDcwY2VmZjkwN2Q0MDI1YmVhMDNiODJjMDBlM2MiLCJpYXQiOjE3NTg4NzExNDEuMzQzNjA3LCJuYmYiOjE3NTg4NzExNDEuMzQzNjEsImV4cCI6MjIzMjI1Njc0MS4zMzk3MjIsInN1YiI6Ijc5NiIsInNjb3BlcyI6W119.i6FRzqvqAJT1LMthVcA1FKUC8_FdTnEMRUr7fxm50OmpFYXFQVc6ELlvSxlvMpwgladLWH3OAiA0qzIsc5cP_mO2A3k9PchmiRJpg-ONDEZrsU3tUBGOf_aE0bBBcVF2KMjE1Zae5msKsa1uvBDhCn6o-g1xgOiBJ0retfnyFCYV6huqEyjhZNaly6C9i65omEYo-xn3L6NOOXMygeb_kEWrOak11AAdvLUfkk12dAuoLfXJV2XNHKrMa6NoPXUk8c2E1KNJb2ZE4J3es153szQv8ue1bnIJtvQYORjN5F-Kgl0eISwUMK_QviGw1z7hwb8sE4qA-grCF-IkZS7u4jOdHSawL7fd7gFzw1HxtaWQIBgvE2mwV1XGWWDnOxc2CmNgBV5o0XWTH32ngAj3pYKlG0Y05VAK-UFM2W7dCsoEySTPfuBAROxei0Pg9eey8Y-QqViIfdm5ExCaHQbrVFpcU8Gs_oozzRqMmPNII4toDYN3VSHu_bmgqTniUN5BrG55MIJQsmFB0ua4aJ4dl4wfUa5G-uNajJPrxDPObTiVI9PwqStLON6ntlv6ij8fN0lk600VWSw3mDK2yjbfjgxMen3fBGnk8XT_fZQpWc4dy0o3EBU3nycxlo2o-pXBAfigYOUrlhO1k7yf6GUzjVLItcdG95T2FOoOqdBtoHg"
   }
