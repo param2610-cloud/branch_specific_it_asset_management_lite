@@ -3,7 +3,7 @@ import { secretKeyFetch } from "@/lib/token/token";
 import { ApiDict } from "@/data/snipe_it_api/ApiDict";
 import { NextRequest } from "next/server";
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const token = req.cookies.get('accessToken')?.value;
     if (!token) {
         return new Response("No token found", { status: 401 });
@@ -18,14 +18,15 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         return new Response("User data not found", { status: 403 });
     }
 
-    const id = parseInt(params.id);
-    if (isNaN(id)) {
+    const { id } = await params;
+    const assetId = parseInt(id);
+    if (isNaN(assetId)) {
         return new Response("Invalid ID", { status: 400 });
     }
 
     const checkinData = await req.json();
 
-    const result = await ApiDict.checkinAsset(userData.secret, userData.locationId, id, checkinData);
+    const result = await ApiDict.checkinAsset(userData.secret, userData.locationId, assetId, checkinData);
     if (result.success) {
         return new Response(JSON.stringify(result.data), { status: 200 });
     } else {

@@ -2,7 +2,7 @@ import { ApiDict } from "@/data/snipe_it_api/ApiDict";
 import { secretKeyFetch, verifyToken } from "@/lib/token/token";
 import { NextRequest, NextResponse } from "next/server"
 
-export async function GET(req:NextRequest,res:NextResponse){
+export async function GET(req:NextRequest){
     try {
         const token = req.cookies.get('accessToken')?.value;
         if (!token) {
