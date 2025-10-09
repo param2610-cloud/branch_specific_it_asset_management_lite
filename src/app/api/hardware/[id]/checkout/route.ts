@@ -27,6 +27,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const checkoutData = await req.json();
 
     const result = await ApiDict.checkoutAsset(userData.secret, userData.locationId, assetId, checkoutData);
+    console.log(result)
     if (result.success) {
         return new Response(JSON.stringify(result.data), { status: 200 });
     } else {
