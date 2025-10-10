@@ -17,6 +17,12 @@ interface SnipeLocationSummary {
     name: string;
 }
 
+interface SnipeStatusLabelSummary {
+    id: number;
+    name: string;
+    status_meta?: string;
+}
+
 type RowsResponse<T> = {
     rows?: T[];
 };
@@ -25,8 +31,8 @@ const extractRows = <T,>(payload: unknown): T[] => {
     if (Array.isArray(payload)) {
         return payload as T[];
     }
-    if (payload && typeof payload === 'object' && Array.isArray((payload as RowsResponse<T>).rows)) {
-        return ((payload as RowsResponse<T>).rows ?? []) as T[];
+    if (payload && typeof payload === 'object' && Array.isArray((payload as RowsResponse<T>)?.rows)) {
+        return ((payload as RowsResponse<T>)?.rows ?? []) as T[];
     }
     return [];
 };
@@ -94,6 +100,7 @@ interface CheckoutPayload {
     assigned_asset?: number;
     assigned_location?: number;
     location_id?: number;
+    status_id?: number;
     expected_checkin?: string;
     note?: string;
     name?: string;
@@ -102,6 +109,7 @@ interface CheckoutPayload {
 
 interface CheckinPayload {
     location_id: number;
+    status_id?: number;
     note?: string;
 }
 
@@ -112,9 +120,11 @@ const DashboardPage = () => {
     const [usersLoading, setUsersLoading] = React.useState<boolean>(false);
     const [locations, setLocations] = React.useState<SnipeLocationSummary[]>([]);
     const [locationsLoading, setLocationsLoading] = React.useState<boolean>(false);
+    const [statusLabels, setStatusLabels] = React.useState<SnipeStatusLabelSummary[]>([]);
+    const [statusLabelsLoading, setStatusLabelsLoading] = React.useState<boolean>(false);
     const [actionState, setActionState] = React.useState<{ assetId: number | null; action: ActionType | null }>({ assetId: null, action: null });
-    const [checkoutForm, setCheckoutForm] = React.useState({ assigned_to: '', location_id: '', expected_checkin: '', note: '' });
-    const [checkinForm, setCheckinForm] = React.useState({ note: '', location_id: '' });
+    const [checkoutForm, setCheckoutForm] = React.useState({ assigned_to: '', status_id: '', expected_checkin: '', note: '' });
+    const [checkinForm, setCheckinForm] = React.useState({ note: '', location_id: '', status_id: '' });
     const [actionLoading, setActionLoading] = React.useState<boolean>(false);
     const [actionMessage, setActionMessage] = React.useState<string | null>(null);
     const [actionError, setActionError] = React.useState<string | null>(null);
@@ -189,9 +199,34 @@ const DashboardPage = () => {
         }
     }, []);
 
+    const fetchStatusLabels = React.useCallback(async () => {
+        setStatusLabelsLoading(true);
+        try {
+            const response = await axios.get('/api/status-labels', {
+                params: { limit: 200 },
+                withCredentials: true,
+            });
+            if (response.data && typeof response.data === 'object' && 'success' in response.data && !response.data.success) {
+                throw new Error(response.data.error || 'API Error');
+            }
+            const rows = extractRows<SnipeStatusLabelSummary>(response.data);
+            const formatted: SnipeStatusLabelSummary[] = rows.map((status) => ({
+                id: status.id,
+                name: status.name,
+                status_meta: status.status_meta,
+            }));
+            setStatusLabels(formatted);
+        } catch (error) {
+            console.error('Failed to load status labels', error);
+            setActionError('Unable to fetch status labels for checkout.');
+        } finally {
+            setStatusLabelsLoading(false);
+        }
+    }, []);
+
     const resetForms = () => {
-    setCheckoutForm({ assigned_to: '', location_id: '', expected_checkin: '', note: '' });
-        setCheckinForm({ note: '', location_id: '' });
+        setCheckoutForm({ assigned_to: '', status_id: '', expected_checkin: '', note: '' });
+    setCheckinForm({ note: '', location_id: '', status_id: '' });
     };
 
     const handleSelectAction = (asset: Asset, action: ActionType) => {
@@ -201,21 +236,25 @@ const DashboardPage = () => {
 
         if (action === 'checkout') {
             const assignedId = typeof asset.assigned_to === 'object' && asset.assigned_to !== null && 'id' in asset.assigned_to
-                ? String((asset.assigned_to as { id?: number }).id ?? '')
+                ? String((asset.assigned_to as { id?: number })?.id ?? '')
                 : '';
-            const locationId = asset.location?.id ? String(asset.location.id) : '';
-            setCheckoutForm({ assigned_to: assignedId, location_id: locationId, expected_checkin: '', note: '' });
+            const statusId = asset.status_label?.id ? String(asset.status_label?.id) : '';
+            setCheckoutForm({ assigned_to: assignedId, status_id: statusId, expected_checkin: '', note: '' });
             if (!users.length && !usersLoading) {
                 void fetchUsers();
             }
+            if (!statusLabels.length && !statusLabelsLoading) {
+                void fetchStatusLabels();
+            }
+        } else {
+            const locationId = asset.location?.id ? String(asset.location?.id) : '';
+            const statusId = asset.status_label?.id ? String(asset.status_label?.id) : '';
+            setCheckinForm({ note: '', location_id: locationId, status_id: statusId });
             if (!locations.length && !locationsLoading) {
                 void fetchLocations();
             }
-        } else {
-            const locationId = asset.location?.id ? String(asset.location.id) : '';
-            setCheckinForm({ note: '', location_id: locationId });
-            if (!locations.length && !locationsLoading) {
-                void fetchLocations();
+            if (!statusLabels.length && !statusLabelsLoading) {
+                void fetchStatusLabels();
             }
         }
     };
@@ -226,7 +265,6 @@ const DashboardPage = () => {
     };
 
     const buildCheckoutPayload = (asset: Asset) => {
-        const selectedLocation = checkoutForm.location_id || (asset.location?.id ? String(asset.location.id) : '');
         const assignedUserId = Number(checkoutForm.assigned_to);
         const payload: CheckoutPayload = {
             assigned_to: assignedUserId,
@@ -237,12 +275,6 @@ const DashboardPage = () => {
 
         if (asset.id) {
             payload.assigned_asset = asset.id;
-        }
-
-        if (selectedLocation) {
-            const locationId = Number(selectedLocation);
-            payload.location_id = locationId;
-            payload.assigned_location = locationId;
         }
 
         if (checkoutForm.expected_checkin) {
@@ -258,6 +290,13 @@ const DashboardPage = () => {
 
         if (asset?.name) {
             payload.name = asset.name;
+        }
+
+        if (checkoutForm.status_id) {
+            const statusId = Number(checkoutForm.status_id);
+            if (!Number.isNaN(statusId)) {
+                payload.status_id = statusId;
+            }
         }
 
         const formattedCheckoutTime = formatDateTimeForSnipe(new Date());
@@ -279,9 +318,8 @@ const DashboardPage = () => {
             return false;
         }
 
-        const selectedLocation = checkoutForm.location_id || (asset.location?.id ? String(asset.location.id) : '');
-        if (!selectedLocation) {
-            setActionError('Please choose a checkout location for this asset.');
+        if (!checkoutForm.status_id) {
+            setActionError('Please choose a deployment status for this asset.');
             return false;
         }
 
@@ -324,6 +362,11 @@ const DashboardPage = () => {
             return;
         }
 
+        if (!checkinForm.status_id) {
+            setActionError('Please choose a status for this asset on check-in.');
+            return;
+        }
+
         setActionLoading(true);
         setActionError(null);
         setActionMessage(null);
@@ -332,6 +375,13 @@ const DashboardPage = () => {
             const payload: CheckinPayload = {
                 location_id: Number(checkinForm.location_id),
             };
+
+            if (checkinForm.status_id) {
+                const statusId = Number(checkinForm.status_id);
+                if (!Number.isNaN(statusId)) {
+                    payload.status_id = statusId;
+                }
+            }
 
             if (checkinForm.note) {
                 payload.note = checkinForm.note;
@@ -356,6 +406,10 @@ const DashboardPage = () => {
     React.useEffect(() => {
         void fetchAsset();
     }, [fetchAsset]);
+
+    React.useEffect(() => {
+        void fetchStatusLabels();
+    }, [fetchStatusLabels]);
     console.log(assets)
 
     return (
@@ -391,22 +445,22 @@ const DashboardPage = () => {
                                         <div className="text-lg font-medium">{asset.name}</div>
                                         <div className="text-sm text-gray-600">{asset.asset_tag}</div>
                                         <div className="text-sm text-gray-600">Serial: {asset.serial || 'N/A'}</div>
-                                        <div className="text-sm text-gray-600">Model: {asset.model.name}</div>
-                                        <div className="text-sm text-gray-600">Status: {asset.status_label.name}</div>
+                                        <div className="text-sm text-gray-600">Model: {asset.model?.name}</div>
+                                        <div className="text-sm text-gray-600">Status: {asset.status_label?.name}</div>
                                         {
-                                            asset.status_label.status_meta === 'deployed' && asset.assigned_to && typeof asset.assigned_to === 'object' && 'name' in asset.assigned_to
-                                                ? <div className="text-sm text-gray-600">Assigned To: {(asset.assigned_to as { name: string }).name}</div>
+                                            asset.status_label?.status_meta === 'deployed' && asset.assigned_to && typeof asset.assigned_to === 'object' && 'name' in asset.assigned_to
+                                                ? <div className="text-sm text-gray-600">Assigned To: {(asset.assigned_to as { name: string })?.name}</div>
                                                 : null
                                         }
-                                        <div className="text-sm text-gray-600">Category: {asset.category.name}</div>
-                                        <div className="text-sm text-gray-600">Manufacturer: {asset.manufacturer.name}</div>
-                                        <div className="text-sm text-gray-600">Company: {asset.company.name}</div>
-                                        <div className="text-sm text-gray-600">Location: {asset.location.name}</div>
-                                        <div className="text-xs text-gray-500">Created: {asset.created_at.formatted}</div>
-                                        <div className="text-xs text-gray-500">Updated: {asset.updated_at.formatted}</div>
+                                        <div className="text-sm text-gray-600">Category: {asset.category?.name}</div>
+                                        <div className="text-sm text-gray-600">Manufacturer: {asset.manufacturer?.name}</div>
+                                        <div className="text-sm text-gray-600">Company: {asset.company?.name}</div>
+                                        <div className="text-sm text-gray-600">Location: {asset.location?.name}</div>
+                                        <div className="text-xs text-gray-500">Created: {asset.created_at?.formatted}</div>
+                                        <div className="text-xs text-gray-500">Updated: {asset.updated_at?.formatted}</div>
                                     </div>
                                     <div className="flex flex-col gap-2">
-                                        {asset.available_actions.checkout && !asset.assigned_to && (
+                                        {asset.available_actions?.checkout && !asset.assigned_to && (
                                             <button
                                                 className="rounded bg-blue-600 px-3 py-1 text-white hover:bg-blue-700 disabled:bg-blue-300"
                                                 onClick={() => handleSelectAction(asset, 'checkout')}
@@ -415,7 +469,7 @@ const DashboardPage = () => {
                                                 Checkout
                                             </button>
                                         )}
-                                        {asset.available_actions.checkin && (
+                                        {asset.available_actions?.checkin && (
                                             <button
                                                 className="rounded bg-emerald-600 px-3 py-1 text-white hover:bg-emerald-700 disabled:bg-emerald-300"
                                                 onClick={() => handleSelectAction(asset, 'checkin')}
@@ -442,28 +496,28 @@ const DashboardPage = () => {
                                                     <option value="">Select a user</option>
                                                     {users.map((user) => (
                                                         <option key={user.id} value={user.id}>
-                                                            {user.name} {user.username ? `(${user.username})` : ''}
+                                                            {user?.name} {user?.username ? `(${user?.username})` : ''}
                                                         </option>
                                                     ))}
                                                 </select>
                                                 {usersLoading && <span className="text-xs text-gray-500">Loading users...</span>}
                                             </label>
                                             <label className="flex flex-col text-sm">
-                                                <span>Checkout Location</span>
+                                                <span>Status on Checkout</span>
                                                 <select
                                                     className="rounded border p-2"
-                                                    value={checkoutForm.location_id}
-                                                    onChange={(event) => setCheckoutForm((prev) => ({ ...prev, location_id: event.target.value }))}
-                                                    disabled={locationsLoading || actionLoading}
+                                                    value={checkoutForm.status_id}
+                                                    onChange={(event) => setCheckoutForm((prev) => ({ ...prev, status_id: event.target.value }))}
+                                                    disabled={statusLabelsLoading || actionLoading}
                                                 >
-                                                    <option value="">Use asset default</option>
-                                                    {locations.map((location) => (
-                                                        <option key={location.id} value={location.id}>
-                                                            {location.name}
+                                                    <option value="">Select a status</option>
+                                                    {statusLabels.map((statusLabel) => (
+                                                        <option key={statusLabel.id} value={statusLabel.id}>
+                                                            {statusLabel?.name}
                                                         </option>
                                                     ))}
                                                 </select>
-                                                {locationsLoading && <span className="text-xs text-gray-500">Loading locations...</span>}
+                                                {statusLabelsLoading && <span className="text-xs text-gray-500">Loading statuses...</span>}
                                             </label>
                                             <label className="flex flex-col text-sm">
                                                 <span>Expected Check-in Date</span>
@@ -519,11 +573,28 @@ const DashboardPage = () => {
                                                     <option value="">Select a location</option>
                                                     {locations.map((location) => (
                                                         <option key={location.id} value={location.id}>
-                                                            {location.name}
+                                                            {location?.name}
                                                         </option>
                                                     ))}
                                                 </select>
                                                 {locationsLoading && <span className="text-xs text-gray-500">Loading locations...</span>}
+                                            </label>
+                                            <label className="flex flex-col text-sm">
+                                                <span>Status</span>
+                                                <select
+                                                    className="rounded border p-2"
+                                                    value={checkinForm.status_id}
+                                                    onChange={(event) => setCheckinForm((prev) => ({ ...prev, status_id: event.target.value }))}
+                                                    disabled={statusLabelsLoading || actionLoading}
+                                                >
+                                                    <option value="">Select a status</option>
+                                                    {statusLabels.map((statusLabel) => (
+                                                        <option key={statusLabel.id} value={statusLabel.id}>
+                                                            {statusLabel?.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                {statusLabelsLoading && <span className="text-xs text-gray-500">Loading statuses...</span>}
                                             </label>
                                             <label className="flex flex-col text-sm">
                                                 <span>Note</span>

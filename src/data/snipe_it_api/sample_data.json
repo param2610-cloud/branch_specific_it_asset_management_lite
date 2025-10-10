@@ -1,0 +1,94 @@
+{
+    "id": 2829,
+    "name": "test asset",
+    "asset_tag": "test#01",
+    "serial": "0001",
+    "model": {
+        "id": 563,
+        "name": "Accer"
+    },
+    "byod": false,
+    "model_number": null,
+    "eol": null,
+    "asset_eol_date": null,
+    "status_label": {
+        "id": 4,
+        "name": "Deployed",
+        "status_type": "deployable",
+        "status_meta": "deployed"
+    },
+    "category": {
+        "id": 75,
+        "name": "DESKTOP"
+    },
+    "manufacturer": {
+        "id": 53,
+        "name": "Accer"
+    },
+    "supplier": {
+        "id": 27,
+        "name": "AMAZON"
+    },
+    "notes": null,
+    "order_number": "3874893274",
+    "company": {
+        "id": 12,
+        "name": "Aum Capital"
+    },
+    "location": null,
+    "rtd_location": {
+        "id": 31,
+        "name": "Ahmedabad"
+    },
+    "image": null,
+    "qr": null,
+    "alt_barcode": "http://192.168.0.205/uploads/barcodes/c128-test01.png",
+    "assigned_to": {
+        "id": 800,
+        "username": "param",
+        "name": "Parambrata Ghosh",
+        "first_name": "Parambrata",
+        "last_name": "Ghosh",
+        "email": "gpampa138@gmail.com",
+        "employee_number": null,
+        "type": "user"
+    },
+    "warranty_months": null,
+    "warranty_expires": null,
+    "created_at": {
+        "datetime": "2025-10-09 18:02:59",
+        "formatted": "09/10/2025 6:02PM"
+    },
+    "updated_at": {
+        "datetime": "2025-10-10 12:36:46",
+        "formatted": "10/10/2025 12:36PM"
+    },
+    "last_audit_date": null,
+    "next_audit_date": null,
+    "deleted_at": null,
+    "purchase_date": {
+        "date": "2025-10-01",
+        "formatted": "01/10/2025"
+    },
+    "age": "1 week ago",
+    "last_checkout": {
+        "datetime": "2025-10-10 12:36:38",
+        "formatted": "10/10/2025 12:36PM"
+    },
+    "expected_checkin": null,
+    "purchase_cost": "33,433.00",
+    "checkin_counter": 5,
+    "checkout_counter": 6,
+    "requests_counter": 0,
+    "user_can_checkout": false,
+    "book_value": null,
+    "custom_fields": {},
+    "available_actions": {
+        "checkout": true,
+        "checkin": true,
+        "clone": true,
+        "restore": false,
+        "update": true,
+        "delete": false
+    }
+}
