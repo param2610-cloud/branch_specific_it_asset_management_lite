@@ -1,10 +1,12 @@
 'use client';
-import React from 'react';
+import React, { useContext } from 'react';
 import { HomeIcon, ComputerDesktopIcon, UsersIcon, Cog6ToothIcon, ArrowLeftOnRectangleIcon } from '@heroicons/react/24/outline';
 import Logo from './Logo';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { AuthContext } from '@/context/AuthContext';
+import axios from 'axios';
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
@@ -16,11 +18,39 @@ const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [mounted, setMounted] = React.useState(false);
+  const auth = useContext(AuthContext);
+  const [branchName,setBranchName] = React.useState('Loading...');
+  
+
+  const fetchBranchName = async () => {
+    console.log(auth)
+    if (auth && auth.user?.location?.id) {
+      try {
+        const response = await axios.get(`/api/locations/${auth.user.location.id}`);
+        console.log('Branch name response:', response);
+        if (response.status === 200) {
+          return response.data.name;
+        }
+      } catch (error) {
+        console.error('Failed to fetch branch name:', error);
+        return 'Unknown Branch';
+      }
+    }
+    return 'Unknown Branch'; 
+  };
 
   React.useEffect(() => {
     setMounted(true);
-  }, []);
-
+    if (auth && !auth.loading && auth.user?.location?.id && branchName === 'Loading...') {
+      console.log('Auth user data:', auth.user);
+      fetchBranchName().then(name => {
+        setBranchName(name);
+      });
+    } else if (auth && !auth.loading && !auth.user?.location?.id) {
+      setBranchName('Unknown Branch');
+    }
+  }, [auth?.user?.location?.id, auth?.loading]);
+console.log(auth)
   const handleLogout = () => {
     localStorage.removeItem('token');
     router.push('/login');
@@ -28,7 +58,6 @@ const Sidebar = () => {
 
   const isActive = (href: string) => {
     if (!mounted) return false;
-    console.log('Comparing', pathname, 'with', href);
     return pathname === href ;
   };
 
@@ -36,6 +65,9 @@ const Sidebar = () => {
     <div className="flex h-full w-72 flex-col bg-neutral-darker-gray text-neutral-base shadow-xl">
       <div className="border-b border-support/20 p-6">
         <Logo />
+        <div className="mt-4 rounded-lg bg-support/10 border border-support/20 px-3 py-1 text-xs font-semibold text-support uppercase tracking-wide shadow-sm">
+          {branchName}
+        </div>
       </div>
       <nav className="flex-1 space-y-1 px-4 py-6">
         {navItems.map((item) => {

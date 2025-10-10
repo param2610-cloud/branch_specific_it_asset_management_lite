@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { useRouter } from 'next/navigation';
+import { AuthContext, AuthProvider } from '@/context/AuthContext';
 
 export default function PrivateLayout({
     children,
@@ -19,10 +20,12 @@ export default function PrivateLayout({
 
     return (
         <div className="flex h-screen bg-neutral-dark-gray">
-            <Sidebar />
-            <main className="flex-1 overflow-y-auto p-8">
-                {children}
-            </main>
+            <AuthProvider >
+                <Sidebar />
+                <main className="flex-1 overflow-y-auto p-8">
+                    {children}
+                </main>
+            </AuthProvider>
         </div>
     );
 }

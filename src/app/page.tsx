@@ -9,7 +9,7 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-primary text-neutral-base flex flex-col">
-      <header className="w-full border-b border-support/40 bg-primary/95 backdrop-blur-sm">
+      <header className="w-full border-b border-white/20 bg-gray-200 backdrop-blur-lg shadow-lg">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
           <Logo />
           <div className="flex items-center gap-4">

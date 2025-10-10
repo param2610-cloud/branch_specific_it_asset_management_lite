@@ -311,4 +311,14 @@ export const ApiDict = {
             return getErrorMessage(error);
         }
     },
+    async getSpecificLocation(secret: string, id: number): Promise<ApiResult<any>> {
+        const axiosInstance = createSnipeItAxios(secret);
+        try {
+            const response = await axiosInstance.get(`/locations/${id}`);
+            return { success: true, data: response.data };
+        } catch (error) {
+            return getErrorMessage(error);
+        }
+    },
+    
 };

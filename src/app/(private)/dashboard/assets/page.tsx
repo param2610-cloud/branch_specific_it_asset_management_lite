@@ -1,11 +1,12 @@
 'use client';
 
 import axios, { isAxiosError } from 'axios';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BuildingOffice2Icon, CheckCircleIcon, ComputerDesktopIcon, ExclamationTriangleIcon, InformationCircleIcon, UserCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { EyeIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
+import { Dialog } from '@headlessui/react';
 
 type ActionType = 'checkout' | 'checkin';
 
@@ -133,7 +134,8 @@ const AssetsPage = () => {
     const [actionLoading, setActionLoading] = React.useState<boolean>(false);
     const [actionMessage, setActionMessage] = React.useState<string | null>(null);
     const [actionError, setActionError] = React.useState<string | null>(null);
-
+    const [filteredAssets, setFilteredAssets] = React.useState<Asset[]>([]);
+    const [input, setInput] = React.useState<string>('');
     const fetchAsset = React.useCallback(async () => {
         setLoading(true);
         setActionError(null);
@@ -146,6 +148,7 @@ const AssetsPage = () => {
             }
             const rows = extractRows<Asset>(response.data);
             setAssets(rows);
+            setFilteredAssets(rows);
         } catch (error) {
             console.error('Failed to load assets', error);
             setActionError('Unable to fetch assets. Please try again later.');
@@ -407,6 +410,20 @@ const AssetsPage = () => {
             setActionLoading(false);
         }
     };
+    const searchAssets = (query: string) => {
+        if (query) {
+            const filteredAssets = assets.filter((asset)=>{
+                return asset.name.toLowerCase().includes(query.toLowerCase()) || (asset.asset_tag && asset.asset_tag.toLowerCase().includes(query.toLowerCase())) || (asset.serial && asset.serial.toLowerCase().includes(query.toLowerCase())) || (asset.model?.name && asset.model.name.toLowerCase().includes(query.toLowerCase())) || (asset.status_label?.name && asset.status_label.name.toLowerCase().includes(query.toLowerCase())) || (asset.location?.name && asset.location.name.toLowerCase().includes(query.toLowerCase())) || (typeof asset.assigned_to === 'object' && asset.assigned_to !== null && 'name' in asset.assigned_to && (asset.assigned_to as { name: string }).name.toLowerCase().includes(query.toLowerCase()));
+            })
+            setFilteredAssets(filteredAssets);
+        }
+        if(!query){
+            setFilteredAssets(assets);
+        }
+    }
+    useEffect(()=>{
+        searchAssets(input);
+    },[input])
 
     React.useEffect(() => {
         void fetchAsset();
@@ -419,6 +436,7 @@ const AssetsPage = () => {
     return (
         <div className="space-y-6 p-6">
             <h1 className="text-3xl font-bold text-white">Assets</h1>
+            <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Search assets..." className="w-full p-2 rounded-md text-white bg-gray-600" />
 
             <AnimatePresence>
                 {actionMessage && (
@@ -462,9 +480,10 @@ const AssetsPage = () => {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {assets.map((asset) => {
+                    {filteredAssets.map((asset) => {
                         const isCurrentAction = actionState.assetId === asset.id ? actionState.action : null;
                         const isDeployed = asset.status_label?.status_meta === 'deployed';
+
                         
                         return (
                             <motion.div 
@@ -537,70 +556,117 @@ const AssetsPage = () => {
                                         </button>
                                     )}
                                 </div>
-
-                                <AnimatePresence>
-                                {isCurrentAction && (
-                                    <motion.div 
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: 'auto', opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        className="overflow-hidden"
-                                    >
-                                        <div
-                                            className="p-5"
-                                            style={{
-                                                backgroundColor: isCurrentAction === 'checkout'
-                                                    ? 'rgba(0, 198, 255, 0.08)'
-                                                    : 'rgba(13, 37, 63, 0.05)',
-                                            }}
-                                        >
-                                            <h4 className="mb-3 text-center font-heading text-primary">{isCurrentAction === 'checkout' ? 'Checkout Asset' : 'Checkin Asset'}</h4>
-                                            
-                                            {isCurrentAction === 'checkout' && (
-                                                <div className="space-y-3">
-                                                    <select value={checkoutForm.assigned_to} onChange={(e) => setCheckoutForm(p => ({...p, assigned_to: e.target.value}))} className="w-full rounded-xl border border-neutral-light-gray/80 bg-neutral-base p-3 text-sm focus:border-support focus:outline-none">
-                                                        <option value="">Select User...</option>
-                                                        {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-                                                    </select>
-                                                    <select value={checkoutForm.status_id} onChange={(e) => setCheckoutForm(p => ({...p, status_id: e.target.value}))} className="w-full rounded-xl border border-neutral-light-gray/80 bg-neutral-base p-3 text-sm focus:border-support focus:outline-none">
-                                                        <option value="">Select Status...</option>
-                                                        {statusLabels.filter(s => s.status_meta === 'deployed').map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                                                    </select>
-                                                    <input type="date" value={checkoutForm.expected_checkin} onChange={(e) => setCheckoutForm(p => ({...p, expected_checkin: e.target.value}))} className="w-full rounded-xl border border-neutral-light-gray/80 p-3 text-sm focus:border-support focus:outline-none" placeholder="Expected Check-in"/>
-                                                    <textarea value={checkoutForm.note} onChange={(e) => setCheckoutForm(p => ({...p, note: e.target.value}))} className="w-full rounded-xl border border-neutral-light-gray/80 p-3 text-sm focus:border-support focus:outline-none" placeholder="Note..."></textarea>
-                                                    <div className="flex gap-2">
-                                                        <button onClick={() => submitCheckout(asset.id)} disabled={actionLoading} className="btn-primary w-full disabled:opacity-50">{actionLoading ? 'Processing...' : 'Confirm'}</button>
-                                                        <button onClick={handleCancelAction} className="btn-outline w-full">Cancel</button>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {isCurrentAction === 'checkin' && (
-                                                <div className="space-y-3">
-                                                    <select value={checkinForm.location_id} onChange={(e) => setCheckinForm(p => ({...p, location_id: e.target.value}))} className="w-full rounded-xl border border-neutral-light-gray/80 bg-neutral-base p-3 text-sm focus:border-support focus:outline-none">
-                                                        <option value="">Select Location...</option>
-                                                        {locations.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
-                                                    </select>
-                                                    <select value={checkinForm.status_id} onChange={(e) => setCheckinForm(p => ({...p, status_id: e.target.value}))} className="w-full rounded-xl border border-neutral-light-gray/80 bg-neutral-base p-3 text-sm focus:border-support focus:outline-none">
-                                                        <option value="">Select Status...</option>
-                                                        {statusLabels.filter(s => s.status_meta !== 'deployed').map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                                                    </select>
-                                                    <textarea value={checkinForm.note} onChange={(e) => setCheckinForm(p => ({...p, note: e.target.value}))} className="w-full rounded-xl border border-neutral-light-gray/80 p-3 text-sm focus:border-support focus:outline-none" placeholder="Note..."></textarea>
-                                                    <div className="flex gap-2">
-                                                        <button onClick={() => submitCheckin(asset.id)} disabled={actionLoading} className="btn-secondary w-full disabled:opacity-50">{actionLoading ? 'Processing...' : 'Confirm'}</button>
-                                                        <button onClick={handleCancelAction} className="btn-outline w-full">Cancel</button>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </motion.div>
-                                )}
-                                </AnimatePresence>
                             </motion.div>
                         );
                     })}
                 </div>
             )}
+            
+            {/* Modal for Checkout/Checkin */}
+            <Dialog open={!!actionState.action} onClose={handleCancelAction} className="relative z-50">
+                <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+                
+                <div className="fixed inset-0 flex items-center justify-center p-4">
+                    <Dialog.Panel className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+                        <Dialog.Title className="text-lg font-medium leading-6 text-gray-900 mb-4">
+                            {actionState.action === 'checkout' ? 'Checkout Asset' : 'Checkin Asset'}
+                        </Dialog.Title>
+                        
+                        {actionState.action === 'checkout' && (
+                            <div className="space-y-4">
+                                <select 
+                                    value={checkoutForm.assigned_to} 
+                                    onChange={(e) => setCheckoutForm(p => ({...p, assigned_to: e.target.value}))} 
+                                    className="w-full rounded-xl border border-gray-300 bg-white p-3 text-sm focus:border-blue-500 focus:outline-none"
+                                >
+                                    <option value="">Select User...</option>
+                                    {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                                </select>
+                                <select 
+                                    value={checkoutForm.status_id} 
+                                    onChange={(e) => setCheckoutForm(p => ({...p, status_id: e.target.value}))} 
+                                    className="w-full rounded-xl border border-gray-300 bg-white p-3 text-sm focus:border-blue-500 focus:outline-none"
+                                >
+                                    <option value="">Select Status...</option>
+                                    {statusLabels.filter(s => s.status_meta === 'deployed').map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                </select>
+                                <input 
+                                    type="date" 
+                                    value={checkoutForm.expected_checkin} 
+                                    onChange={(e) => setCheckoutForm(p => ({...p, expected_checkin: e.target.value}))} 
+                                    className="w-full rounded-xl border border-gray-300 p-3 text-sm focus:border-blue-500 focus:outline-none" 
+                                    placeholder="Expected Check-in"
+                                />
+                                <textarea 
+                                    value={checkoutForm.note} 
+                                    onChange={(e) => setCheckoutForm(p => ({...p, note: e.target.value}))} 
+                                    className="w-full rounded-xl border border-gray-300 p-3 text-sm focus:border-blue-500 focus:outline-none" 
+                                    placeholder="Note..."
+                                    rows={3}
+                                ></textarea>
+                                <div className="flex gap-3 pt-4">
+                                    <button 
+                                        onClick={() => actionState.assetId && submitCheckout(actionState.assetId)} 
+                                        disabled={actionLoading} 
+                                        className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {actionLoading ? 'Processing...' : 'Confirm Checkout'}
+                                    </button>
+                                    <button 
+                                        onClick={handleCancelAction} 
+                                        className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {actionState.action === 'checkin' && (
+                            <div className="space-y-4">
+                                <select 
+                                    value={checkinForm.location_id} 
+                                    onChange={(e) => setCheckinForm(p => ({...p, location_id: e.target.value}))} 
+                                    className="w-full rounded-xl border border-gray-300 bg-white p-3 text-sm focus:border-blue-500 focus:outline-none"
+                                >
+                                    <option value="">Select Location...</option>
+                                    {locations.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                                </select>
+                                <select 
+                                    value={checkinForm.status_id} 
+                                    onChange={(e) => setCheckinForm(p => ({...p, status_id: e.target.value}))} 
+                                    className="w-full rounded-xl border border-gray-300 bg-white p-3 text-sm focus:border-blue-500 focus:outline-none"
+                                >
+                                    <option value="">Select Status...</option>
+                                    {statusLabels.filter(s => s.status_meta !== 'deployed').map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                </select>
+                                <textarea 
+                                    value={checkinForm.note} 
+                                    onChange={(e) => setCheckinForm(p => ({...p, note: e.target.value}))} 
+                                    className="w-full rounded-xl border border-gray-300 p-3 text-sm focus:border-blue-500 focus:outline-none" 
+                                    placeholder="Note..."
+                                    rows={3}
+                                ></textarea>
+                                <div className="flex gap-3 pt-4">
+                                    <button 
+                                        onClick={() => actionState.assetId && submitCheckin(actionState.assetId)} 
+                                        disabled={actionLoading} 
+                                        className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {actionLoading ? 'Processing...' : 'Confirm Checkin'}
+                                    </button>
+                                    <button 
+                                        onClick={handleCancelAction} 
+                                        className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </Dialog.Panel>
+                </div>
+            </Dialog>
         </div>
     );
 };

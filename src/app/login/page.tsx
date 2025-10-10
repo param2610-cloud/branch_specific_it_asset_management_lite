@@ -81,7 +81,9 @@ const LoginPage = () => {
       <AnimatedBackground />
       <div className="relative z-10 w-full max-w-md">
         <div className="mb-10 text-center">
-          <Logo />
+          <div className="inline-block rounded-xl bg-white/30 p-4 shadow-lg backdrop-blur-sm">
+            <Logo />
+          </div>
         </div>
         <div className="rounded-3xl border border-support/30 bg-neutral-darker-gray/80 p-8 shadow-2xl backdrop-blur-xl">
           <AnimatePresence mode="wait">
