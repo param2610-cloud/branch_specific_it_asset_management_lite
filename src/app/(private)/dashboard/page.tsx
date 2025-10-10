@@ -1,636 +1,225 @@
-'use client';
+﻿'use client';
 
-import axios, { isAxiosError } from 'axios';
+import axios from 'axios';
 import React from 'react';
+import { motion } from 'framer-motion';
+import { ComputerDesktopIcon, UserGroupIcon, ChartBarIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
 
-type ActionType = 'checkout' | 'checkin';
-
-interface SnipeUserSummary {
+interface SnipeUser {
     id: number;
     name: string;
     username?: string;
     email?: string;
+    avatar?: string;
+    assets_count?: number;
 }
 
-interface SnipeLocationSummary {
+interface Asset {
     id: number;
     name: string;
+    asset_tag: string;
+    status_label?: { id: number; name: string; status_meta: string };
+    assigned_to?: any;
+    location?: { id: number; name: string };
+    model?: { id: number; name: string };
 }
 
-interface SnipeStatusLabelSummary {
-    id: number;
-    name: string;
-    status_meta?: string;
-}
-
-type RowsResponse<T> = {
-    rows?: T[];
-};
+type RowsResponse<T> = { rows?: T[] };
 
 const extractRows = <T,>(payload: unknown): T[] => {
-    if (Array.isArray(payload)) {
-        return payload as T[];
-    }
+    if (Array.isArray(payload)) return payload as T[];
     if (payload && typeof payload === 'object' && Array.isArray((payload as RowsResponse<T>)?.rows)) {
         return ((payload as RowsResponse<T>)?.rows ?? []) as T[];
     }
     return [];
 };
 
-const extractApiErrorMessage = (error: unknown): string => {
-    if (isAxiosError(error)) {
-        const data = error.response?.data as any;
-        const fallback = error.message || 'Request failed.';
-        if (!data) {
-            return fallback;
-        }
-
-        if (typeof data === 'string') {
-            return data;
-        }
-
-        const parts: string[] = [];
-
-        if (typeof data.message === 'string') {
-            parts.push(data.message);
-        }
-
-        if (typeof data.error === 'string') {
-            parts.push(data.error);
-        }
-
-        if (data.messages && typeof data.messages === 'object') {
-            const details = Object.entries(data.messages as Record<string, unknown>)
-                .flatMap(([field, value]) => {
-                    if (Array.isArray(value)) {
-                        return value.map((item) => `${field}: ${String(item)}`);
-                    }
-                    return `${field}: ${String(value)}`;
-                });
-            if (details.length) {
-                parts.push(details.join(' | '));
-            }
-        }
-
-        return parts.filter(Boolean).join(' - ') || fallback;
-    }
-
-    if (error instanceof Error) {
-        return error.message;
-    }
-
-    return 'An unexpected error occurred.';
-};
-
-const formatDateTimeForSnipe = (input: string | Date): string | null => {
-    const date = typeof input === 'string' ? new Date(input) : input;
-    if (Number.isNaN(date.getTime())) {
-        return null;
-    }
-
-    const pad = (value: number) => value.toString().padStart(2, '0');
-
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-};
-
-interface CheckoutPayload {
-    assigned_to: number;
-    checkout_to_type: 'user';
-    assigned_user?: number;
-    assigned_asset?: number;
-    assigned_location?: number;
-    location_id?: number;
-    status_id?: number;
-    expected_checkin?: string;
-    note?: string;
-    name?: string;
-    checkout_at?: string;
-}
-
-interface CheckinPayload {
-    location_id: number;
-    status_id?: number;
-    note?: string;
-}
-
 const DashboardPage = () => {
+    const router = useRouter();
     const [assets, setAssets] = React.useState<Asset[]>([]);
+    const [users, setUsers] = React.useState<SnipeUser[]>([]);
     const [loading, setLoading] = React.useState<boolean>(true);
-    const [users, setUsers] = React.useState<SnipeUserSummary[]>([]);
-    const [usersLoading, setUsersLoading] = React.useState<boolean>(false);
-    const [locations, setLocations] = React.useState<SnipeLocationSummary[]>([]);
-    const [locationsLoading, setLocationsLoading] = React.useState<boolean>(false);
-    const [statusLabels, setStatusLabels] = React.useState<SnipeStatusLabelSummary[]>([]);
-    const [statusLabelsLoading, setStatusLabelsLoading] = React.useState<boolean>(false);
-    const [actionState, setActionState] = React.useState<{ assetId: number | null; action: ActionType | null }>({ assetId: null, action: null });
-    const [checkoutForm, setCheckoutForm] = React.useState({ assigned_to: '', status_id: '', expected_checkin: '', note: '' });
-    const [checkinForm, setCheckinForm] = React.useState({ note: '', location_id: '', status_id: '' });
-    const [actionLoading, setActionLoading] = React.useState<boolean>(false);
-    const [actionMessage, setActionMessage] = React.useState<string | null>(null);
-    const [actionError, setActionError] = React.useState<string | null>(null);
 
-    const fetchAsset = React.useCallback(async () => {
-        setLoading(true);
-        setActionError(null);
-        try {
-            const response = await axios.get('/api/asset', {
-                withCredentials: true,
-            });
-            if (response.data && typeof response.data === 'object' && 'success' in response.data && !response.data.success) {
-                throw new Error(response.data.error || 'API Error');
+    React.useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const [assetsRes, usersRes] = await Promise.all([
+                    axios.get('/api/asset', { withCredentials: true }),
+                    axios.get('/api/users', { params: { limit: 500 }, withCredentials: true })
+                ]);
+                const assetsData = extractRows<Asset>(assetsRes.data);
+                const usersData = extractRows<SnipeUser>(usersRes.data);
+                setAssets(assetsData);
+                setUsers(usersData);
+            } catch (error) {
+                console.error('Failed to load dashboard data', error);
+            } finally {
+                setLoading(false);
             }
-            const rows = extractRows<Asset>(response.data);
-            setAssets(rows);
-        } catch (error) {
-            console.error('Failed to load assets', error);
-            setActionError('Unable to fetch assets. Please try again later.');
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    const fetchUsers = React.useCallback(async () => {
-        setUsersLoading(true);
-        try {
-            const response = await axios.get('/api/users', {
-                params: { limit: 200 },
-                withCredentials: true,
-            });
-            if (response.data && typeof response.data === 'object' && 'success' in response.data && !response.data.success) {
-                throw new Error(response.data.error || 'API Error');
-            }
-            const rows = extractRows<SnipeUserSummary>(response.data);
-            const formatted: SnipeUserSummary[] = rows.map((user) => ({
-                id: user.id,
-                name: user.name,
-                username: user.username,
-                email: user.email,
-            }));
-            setUsers(formatted);
-        } catch (error) {
-            console.error('Failed to load users', error);
-            setActionError('Unable to fetch users for checkout.');
-        } finally {
-            setUsersLoading(false);
-        }
-    }, []);
-
-    const fetchLocations = React.useCallback(async () => {
-        setLocationsLoading(true);
-        try {
-            const response = await axios.get('/api/locations', {
-                params: { limit: 200 },
-                withCredentials: true,
-            });
-            if (response.data && typeof response.data === 'object' && 'success' in response.data && !response.data.success) {
-                throw new Error(response.data.error || 'API Error');
-            }
-            const rows = extractRows<SnipeLocationSummary>(response.data);
-            const formatted: SnipeLocationSummary[] = rows.map((location) => ({
-                id: location.id,
-                name: location.name,
-            }));
-            setLocations(formatted);
-        } catch (error) {
-            console.error('Failed to load locations', error);
-            setActionError('Unable to fetch locations for checkin.');
-        } finally {
-            setLocationsLoading(false);
-        }
-    }, []);
-
-    const fetchStatusLabels = React.useCallback(async () => {
-        setStatusLabelsLoading(true);
-        try {
-            const response = await axios.get('/api/status-labels', {
-                params: { limit: 200 },
-                withCredentials: true,
-            });
-            if (response.data && typeof response.data === 'object' && 'success' in response.data && !response.data.success) {
-                throw new Error(response.data.error || 'API Error');
-            }
-            const rows = extractRows<SnipeStatusLabelSummary>(response.data);
-            const formatted: SnipeStatusLabelSummary[] = rows.map((status) => ({
-                id: status.id,
-                name: status.name,
-                status_meta: status.status_meta,
-            }));
-            setStatusLabels(formatted);
-        } catch (error) {
-            console.error('Failed to load status labels', error);
-            setActionError('Unable to fetch status labels for checkout.');
-        } finally {
-            setStatusLabelsLoading(false);
-        }
-    }, []);
-
-    const resetForms = () => {
-        setCheckoutForm({ assigned_to: '', status_id: '', expected_checkin: '', note: '' });
-    setCheckinForm({ note: '', location_id: '', status_id: '' });
-    };
-
-    const handleSelectAction = (asset: Asset, action: ActionType) => {
-        setActionMessage(null);
-        setActionError(null);
-        setActionState({ assetId: asset.id, action });
-
-        if (action === 'checkout') {
-            const assignedId = typeof asset.assigned_to === 'object' && asset.assigned_to !== null && 'id' in asset.assigned_to
-                ? String((asset.assigned_to as { id?: number })?.id ?? '')
-                : '';
-            const statusId = asset.status_label?.id ? String(asset.status_label?.id) : '';
-            setCheckoutForm({ assigned_to: assignedId, status_id: statusId, expected_checkin: '', note: '' });
-            if (!users.length && !usersLoading) {
-                void fetchUsers();
-            }
-            if (!statusLabels.length && !statusLabelsLoading) {
-                void fetchStatusLabels();
-            }
-        } else {
-            const locationId = asset.location?.id ? String(asset.location?.id) : '';
-            const statusId = asset.status_label?.id ? String(asset.status_label?.id) : '';
-            setCheckinForm({ note: '', location_id: locationId, status_id: statusId });
-            if (!locations.length && !locationsLoading) {
-                void fetchLocations();
-            }
-            if (!statusLabels.length && !statusLabelsLoading) {
-                void fetchStatusLabels();
-            }
-        }
-    };
-
-    const handleCancelAction = () => {
-        setActionState({ assetId: null, action: null });
-        resetForms();
-    };
-
-    const buildCheckoutPayload = (asset: Asset) => {
-        const assignedUserId = Number(checkoutForm.assigned_to);
-        const payload: CheckoutPayload = {
-            assigned_to: assignedUserId,
-            checkout_to_type: 'user',
         };
+        void fetchData();
+    }, []);
 
-        payload.assigned_user = assignedUserId;
+    const totalAssets = assets.length;
+    const deployedAssets = assets.filter(a => a.status_label?.status_meta === 'deployed').length;
+    const availableAssets = assets.filter(a => a.status_label?.status_meta !== 'deployed').length;
+    const totalUsers = users.length;
 
-        if (asset.id) {
-            payload.assigned_asset = asset.id;
-        }
-
-        if (checkoutForm.expected_checkin) {
-            const formattedExpectedCheckin = formatDateTimeForSnipe(checkoutForm.expected_checkin);
-            if (formattedExpectedCheckin) {
-                payload.expected_checkin = formattedExpectedCheckin;
-            }
-        }
-
-        if (checkoutForm.note) {
-            payload.note = checkoutForm.note;
-        }
-
-        if (asset?.name) {
-            payload.name = asset.name;
-        }
-
-        if (checkoutForm.status_id) {
-            const statusId = Number(checkoutForm.status_id);
-            if (!Number.isNaN(statusId)) {
-                payload.status_id = statusId;
-            }
-        }
-
-        const formattedCheckoutTime = formatDateTimeForSnipe(new Date());
-        if (formattedCheckoutTime) {
-            payload.checkout_at = formattedCheckoutTime;
-        }
-
-        return payload;
-    };
-
-    const validateCheckout = (asset: Asset | undefined): asset is Asset => {
-        if (!checkoutForm.assigned_to) {
-            setActionError('Please select a user to assign this asset to.');
-            return false;
-        }
-
-        if (!asset) {
-            setActionError('Unable to find asset details for this checkout.');
-            return false;
-        }
-
-        if (!checkoutForm.status_id) {
-            setActionError('Please choose a deployment status for this asset.');
-            return false;
-        }
-
-        return true;
-    };
-
-    const submitCheckout = async (assetId: number) => {
-        setActionLoading(true);
-        setActionError(null);
-        setActionMessage(null);
-
-        const currentAsset = assets.find((item) => item.id === assetId);
-        if (!validateCheckout(currentAsset)) {
-            setActionLoading(false);
-            return;
-        }
-
-        try {
-            const payload = buildCheckoutPayload(currentAsset);
-
-            await axios.post(`/api/hardware/${assetId}/checkout`, payload, {
-                withCredentials: true,
-            });
-
-            setActionMessage('Asset checked out successfully.');
-            setActionState({ assetId: null, action: null });
-            resetForms();
-            await fetchAsset();
-        } catch (error) {
-            console.error('Checkout failed', error);
-            setActionError(extractApiErrorMessage(error));
-        } finally {
-            setActionLoading(false);
-        }
-    };
-
-    const submitCheckin = async (assetId: number) => {
-        if (!checkinForm.location_id) {
-            setActionError('A location is required to check in this asset.');
-            return;
-        }
-
-        if (!checkinForm.status_id) {
-            setActionError('Please choose a status for this asset on check-in.');
-            return;
-        }
-
-        setActionLoading(true);
-        setActionError(null);
-        setActionMessage(null);
-
-        try {
-            const payload: CheckinPayload = {
-                location_id: Number(checkinForm.location_id),
-            };
-
-            if (checkinForm.status_id) {
-                const statusId = Number(checkinForm.status_id);
-                if (!Number.isNaN(statusId)) {
-                    payload.status_id = statusId;
-                }
-            }
-
-            if (checkinForm.note) {
-                payload.note = checkinForm.note;
-            }
-
-            await axios.post(`/api/hardware/${assetId}/checkin`, payload, {
-                withCredentials: true,
-            });
-
-            setActionMessage('Asset checked in successfully.');
-            setActionState({ assetId: null, action: null });
-            resetForms();
-            await fetchAsset();
-        } catch (error) {
-            console.error('Checkin failed', error);
-            setActionError(extractApiErrorMessage(error));
-        } finally {
-            setActionLoading(false);
-        }
-    };
-
-    React.useEffect(() => {
-        void fetchAsset();
-    }, [fetchAsset]);
-
-    React.useEffect(() => {
-        void fetchStatusLabels();
-    }, [fetchStatusLabels]);
-    console.log(assets)
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} className="h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full"></motion.div>
+                <p className="ml-4 text-gray-300">Loading Dashboard...</p>
+            </div>
+        );
+    }
 
     return (
-        <div className="space-y-6 p-4">
-            <div className="text-xl font-semibold">Aum Capital IT Asset Management System Lite</div>
+        <div className="space-y-6 p-6">
+            <div>
+                <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+                <p className="text-gray-400 mt-2">Welcome to your IT Asset Management System</p>
+            </div>
 
-            {actionMessage && (
-                <div className="rounded border border-green-300 bg-green-50 p-3 text-green-800">
-                    {actionMessage}
-                </div>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-xl text-white">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-blue-100 text-sm font-medium">Total Assets</p>
+                            <p className="text-4xl font-bold mt-2">{totalAssets}</p>
+                        </div>
+                        <div className="bg-white/20 p-3 rounded-xl"><ComputerDesktopIcon className="h-8 w-8" /></div>
+                    </div>
+                    <div className="mt-4">
+                        <button onClick={() => router.push('/dashboard/assets')} className="text-sm text-blue-100 hover:text-white transition-colors">View all assets →</button>
+                    </div>
+                </motion.div>
 
-            {actionError && (
-                <div className="rounded border border-red-300 bg-red-50 p-3 text-red-800">
-                    {actionError}
-                </div>
-            )}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 shadow-xl text-white">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-green-100 text-sm font-medium">Deployed</p>
+                            <p className="text-4xl font-bold mt-2">{deployedAssets}</p>
+                        </div>
+                        <div className="bg-white/20 p-3 rounded-xl"><CheckCircleIcon className="h-8 w-8" /></div>
+                    </div>
+                    <div className="mt-4">
+                        <span className="text-sm text-green-100">{totalAssets > 0 ? Math.round((deployedAssets / totalAssets) * 100) : 0}% of total assets</span>
+                    </div>
+                </motion.div>
 
-            {loading && <div>Loading assets...</div>}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 shadow-xl text-white">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-orange-100 text-sm font-medium">Available</p>
+                            <p className="text-4xl font-bold mt-2">{availableAssets}</p>
+                        </div>
+                        <div className="bg-white/20 p-3 rounded-xl"><XCircleIcon className="h-8 w-8" /></div>
+                    </div>
+                    <div className="mt-4"><span className="text-sm text-orange-100">Ready to deploy</span></div>
+                </motion.div>
 
-            {!loading && assets.length === 0 && (
-                <div>No assets found</div>
-            )}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 shadow-xl text-white">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-purple-100 text-sm font-medium">Total Users</p>
+                            <p className="text-4xl font-bold mt-2">{totalUsers}</p>
+                        </div>
+                        <div className="bg-white/20 p-3 rounded-xl"><UserGroupIcon className="h-8 w-8" /></div>
+                    </div>
+                    <div className="mt-4">
+                        <button onClick={() => router.push('/dashboard/users')} className="text-sm text-purple-100 hover:text-white transition-colors">View all users →</button>
+                    </div>
+                </motion.div>
+            </div>
 
-            {!loading && assets.length > 0 && (
-                <div className="space-y-4">
-                    {assets.map((asset) => {
-                        const isCurrentAction = actionState.assetId === asset.id ? actionState.action : null;
-                        return (
-                            <div key={asset.id} className="rounded border p-4 shadow-sm">
-                                <div className="flex flex-wrap items-start justify-between gap-4">
-                                    <div>
-                                        <div className="text-lg font-medium">{asset.name}</div>
-                                        <div className="text-sm text-gray-600">{asset.asset_tag}</div>
-                                        <div className="text-sm text-gray-600">Serial: {asset.serial || 'N/A'}</div>
-                                        <div className="text-sm text-gray-600">Model: {asset.model?.name}</div>
-                                        <div className="text-sm text-gray-600">Status: {asset.status_label?.name}</div>
-                                        {
-                                            asset.status_label?.status_meta === 'deployed' && asset.assigned_to && typeof asset.assigned_to === 'object' && 'name' in asset.assigned_to
-                                                ? <div className="text-sm text-gray-600">Assigned To: {(asset.assigned_to as { name: string })?.name}</div>
-                                                : null
-                                        }
-                                        <div className="text-sm text-gray-600">Category: {asset.category?.name}</div>
-                                        <div className="text-sm text-gray-600">Manufacturer: {asset.manufacturer?.name}</div>
-                                        <div className="text-sm text-gray-600">Company: {asset.company?.name}</div>
-                                        <div className="text-sm text-gray-600">Location: {asset.location?.name}</div>
-                                        <div className="text-xs text-gray-500">Created: {asset.created_at?.formatted}</div>
-                                        <div className="text-xs text-gray-500">Updated: {asset.updated_at?.formatted}</div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }} className="bg-gray-800 rounded-2xl p-6 shadow-xl">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold text-white">Recent Assets</h2>
+                        <button onClick={() => router.push('/dashboard/assets')} className="text-blue-400 hover:text-blue-300 text-sm font-medium">View All</button>
+                    </div>
+                    <div className="space-y-3">
+                        {assets.slice(0, 5).map((asset) => (
+                            <motion.div key={asset.id} whileHover={{ scale: 1.01 }} onClick={() => router.push(`/dashboard/assets/${asset.id}`)} className="bg-gray-700/50 rounded-xl p-4 cursor-pointer hover:bg-gray-700 transition-all">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-white font-semibold truncate">{asset.name}</h3>
+                                        <p className="text-gray-400 text-sm truncate">{asset.model?.name}</p>
                                     </div>
-                                    <div className="flex flex-col gap-2">
-                                        {asset.available_actions?.checkout && !asset.assigned_to && (
-                                            <button
-                                                className="rounded bg-blue-600 px-3 py-1 text-white hover:bg-blue-700 disabled:bg-blue-300"
-                                                onClick={() => handleSelectAction(asset, 'checkout')}
-                                                disabled={actionLoading && isCurrentAction === 'checkout'}
-                                            >
-                                                Checkout
-                                            </button>
-                                        )}
-                                        {asset.available_actions?.checkin && (
-                                            <button
-                                                className="rounded bg-emerald-600 px-3 py-1 text-white hover:bg-emerald-700 disabled:bg-emerald-300"
-                                                onClick={() => handleSelectAction(asset, 'checkin')}
-                                                disabled={actionLoading && isCurrentAction === 'checkin'}
-                                            >
-                                                Checkin
-                                            </button>
-                                        )}
+                                    <div className="ml-4">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${asset.status_label?.status_meta === 'deployed' ? 'bg-green-500/20 text-green-400' : 'bg-gray-600 text-gray-300'}`}>{asset.status_label?.name || 'Unknown'}</span>
                                     </div>
                                 </div>
-
-                                {isCurrentAction === 'checkout' && (
-                                    <div className="mt-4 space-y-3 rounded border border-blue-200 bg-blue-50 p-3">
-                                        <div className="font-semibold">Checkout Asset</div>
-                                        <div className="space-y-2">
-                                            <label className="flex flex-col text-sm">
-                                                <span>User</span>
-                                                <select
-                                                    className="rounded border p-2"
-                                                    value={checkoutForm.assigned_to}
-                                                    onChange={(event) => setCheckoutForm((prev) => ({ ...prev, assigned_to: event.target.value }))}
-                                                    disabled={usersLoading || actionLoading}
-                                                >
-                                                    <option value="">Select a user</option>
-                                                    {users.map((user) => (
-                                                        <option key={user.id} value={user.id}>
-                                                            {user?.name} {user?.username ? `(${user?.username})` : ''}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                                {usersLoading && <span className="text-xs text-gray-500">Loading users...</span>}
-                                            </label>
-                                            <label className="flex flex-col text-sm">
-                                                <span>Status on Checkout</span>
-                                                <select
-                                                    className="rounded border p-2"
-                                                    value={checkoutForm.status_id}
-                                                    onChange={(event) => setCheckoutForm((prev) => ({ ...prev, status_id: event.target.value }))}
-                                                    disabled={statusLabelsLoading || actionLoading}
-                                                >
-                                                    <option value="">Select a status</option>
-                                                    {statusLabels.map((statusLabel) => (
-                                                        <option key={statusLabel.id} value={statusLabel.id}>
-                                                            {statusLabel?.name}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                                {statusLabelsLoading && <span className="text-xs text-gray-500">Loading statuses...</span>}
-                                            </label>
-                                            <label className="flex flex-col text-sm">
-                                                <span>Expected Check-in Date</span>
-                                                <input
-                                                    type="date"
-                                                    className="rounded border p-2"
-                                                    value={checkoutForm.expected_checkin}
-                                                    onChange={(event) => setCheckoutForm((prev) => ({ ...prev, expected_checkin: event.target.value }))}
-                                                    disabled={actionLoading}
-                                                />
-                                            </label>
-                                            <label className="flex flex-col text-sm">
-                                                <span>Note</span>
-                                                <textarea
-                                                    className="rounded border p-2"
-                                                    value={checkoutForm.note}
-                                                    onChange={(event) => setCheckoutForm((prev) => ({ ...prev, note: event.target.value }))}
-                                                    disabled={actionLoading}
-                                                />
-                                            </label>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button
-                                                className="rounded bg-blue-600 px-3 py-1 text-white hover:bg-blue-700 disabled:bg-blue-300"
-                                                onClick={() => submitCheckout(asset.id)}
-                                                disabled={actionLoading}
-                                            >
-                                                {actionLoading ? 'Processing...' : 'Confirm Checkout'}
-                                            </button>
-                                            <button
-                                                className="rounded bg-gray-200 px-3 py-1 text-gray-700 hover:bg-gray-300"
-                                                onClick={handleCancelAction}
-                                                disabled={actionLoading}
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {isCurrentAction === 'checkin' && (
-                                    <div className="mt-4 space-y-3 rounded border border-emerald-200 bg-emerald-50 p-3">
-                                        <div className="font-semibold">Checkin Asset</div>
-                                        <div className="space-y-2">
-                                            <label className="flex flex-col text-sm">
-                                                <span>Location</span>
-                                                <select
-                                                    className="rounded border p-2"
-                                                    value={checkinForm.location_id}
-                                                    onChange={(event) => setCheckinForm((prev) => ({ ...prev, location_id: event.target.value }))}
-                                                    disabled={locationsLoading || actionLoading}
-                                                >
-                                                    <option value="">Select a location</option>
-                                                    {locations.map((location) => (
-                                                        <option key={location.id} value={location.id}>
-                                                            {location?.name}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                                {locationsLoading && <span className="text-xs text-gray-500">Loading locations...</span>}
-                                            </label>
-                                            <label className="flex flex-col text-sm">
-                                                <span>Status</span>
-                                                <select
-                                                    className="rounded border p-2"
-                                                    value={checkinForm.status_id}
-                                                    onChange={(event) => setCheckinForm((prev) => ({ ...prev, status_id: event.target.value }))}
-                                                    disabled={statusLabelsLoading || actionLoading}
-                                                >
-                                                    <option value="">Select a status</option>
-                                                    {statusLabels.map((statusLabel) => (
-                                                        <option key={statusLabel.id} value={statusLabel.id}>
-                                                            {statusLabel?.name}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                                {statusLabelsLoading && <span className="text-xs text-gray-500">Loading statuses...</span>}
-                                            </label>
-                                            <label className="flex flex-col text-sm">
-                                                <span>Note</span>
-                                                <textarea
-                                                    className="rounded border p-2"
-                                                    value={checkinForm.note}
-                                                    onChange={(event) => setCheckinForm((prev) => ({ ...prev, note: event.target.value }))}
-                                                    disabled={actionLoading}
-                                                />
-                                            </label>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button
-                                                className="rounded bg-emerald-600 px-3 py-1 text-white hover:bg-emerald-700 disabled:bg-emerald-300"
-                                                onClick={() => submitCheckin(asset.id)}
-                                                disabled={actionLoading}
-                                            >
-                                                {actionLoading ? 'Processing...' : 'Confirm Checkin'}
-                                            </button>
-                                            <button
-                                                className="rounded bg-gray-200 px-3 py-1 text-gray-700 hover:bg-gray-300"
-                                                onClick={handleCancelAction}
-                                                disabled={actionLoading}
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
+                            </motion.div>
+                        ))}
+                        {assets.length === 0 && (
+                            <div className="text-center py-8 text-gray-500">
+                                <ComputerDesktopIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                                <p>No assets found</p>
                             </div>
-                        );
-                    })}
-                </div>
-            )}
+                        )}
+                    </div>
+                </motion.div>
 
-            <div className="text-sm text-gray-600">Total Assets: {assets.length}</div>
+                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }} className="bg-gray-800 rounded-2xl p-6 shadow-xl">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold text-white">Recent Users</h2>
+                        <button onClick={() => router.push('/dashboard/users')} className="text-blue-400 hover:text-blue-300 text-sm font-medium">View All</button>
+                    </div>
+                    <div className="space-y-3">
+                        {users.slice(0, 5).map((user) => (
+                            <motion.div key={user.id} whileHover={{ scale: 1.01 }} onClick={() => router.push(`/dashboard/users/${user.id}`)} className="bg-gray-700/50 rounded-xl p-4 cursor-pointer hover:bg-gray-700 transition-all">
+                                <div className="flex items-center gap-4">
+                                    {user.avatar ? (
+                                        <img src={user.avatar} alt={user.name} className="h-10 w-10 rounded-full object-cover" />
+                                    ) : (
+                                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                            <span className="text-white font-bold">{user.name?.charAt(0)?.toUpperCase() || '?'}</span>
+                                        </div>
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-white font-semibold truncate">{user.name}</h3>
+                                        <p className="text-gray-400 text-sm truncate">{user.email || user.username}</p>
+                                    </div>
+                                    {typeof user.assets_count === 'number' && user.assets_count > 0 && (
+                                        <div className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-xs font-medium">{user.assets_count} {user.assets_count === 1 ? 'Asset' : 'Assets'}</div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        ))}
+                        {users.length === 0 && (
+                            <div className="text-center py-8 text-gray-500">
+                                <UserGroupIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                                <p>No users found</p>
+                            </div>
+                        )}
+                    </div>
+                </motion.div>
+            </div>
+
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="bg-gray-800 rounded-2xl p-6 shadow-xl">
+                <h2 className="text-2xl font-bold text-white mb-6">Quick Actions</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onClick={() => router.push('/dashboard/assets')} className="bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 rounded-xl p-6 text-left transition-all group">
+                        <ComputerDesktopIcon className="h-8 w-8 text-blue-400 mb-3 group-hover:scale-110 transition-transform" />
+                        <h3 className="text-white font-semibold mb-1">View Assets</h3>
+                        <p className="text-gray-400 text-sm">Browse and manage all assets</p>
+                    </button>
+                    <button onClick={() => router.push('/dashboard/users')} className="bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 rounded-xl p-6 text-left transition-all group">
+                        <UserGroupIcon className="h-8 w-8 text-purple-400 mb-3 group-hover:scale-110 transition-transform" />
+                        <h3 className="text-white font-semibold mb-1">View Users</h3>
+                        <p className="text-gray-400 text-sm">Manage system users</p>
+                    </button>
+                    <button onClick={() => router.push('/dashboard')} className="bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 rounded-xl p-6 text-left transition-all group">
+                        <ChartBarIcon className="h-8 w-8 text-orange-400 mb-3 group-hover:scale-110 transition-transform" />
+                        <h3 className="text-white font-semibold mb-1">Reports</h3>
+                        <p className="text-gray-400 text-sm">View analytics and reports</p>
+                    </button>
+                </div>
+            </motion.div>
         </div>
     );
 };

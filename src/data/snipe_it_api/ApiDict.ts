@@ -278,7 +278,7 @@ export const ApiDict = {
     async getUserAssets(secret: string, id: number, params?: Record<string, unknown>): Promise<ApiResult<any>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
-            const response = await axiosInstance.get(`/users/${id}/hardware`, { params });
+            const response = await axiosInstance.get(`/users/${id}/assets`, { params });
             return { success: true, data: response.data };
         } catch (error) {
             return getErrorMessage(error);
@@ -297,6 +297,15 @@ export const ApiDict = {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const response = await axiosInstance.get("/users", { params: { username } });
+            return { success: true, data: response.data };
+        } catch (error) {
+            return getErrorMessage(error);
+        }
+    },
+    async updateAsset(secret: string, locationId: number, id: number, updateData: Record<string, unknown>): Promise<ApiResult<any>> {
+        const axiosInstance = createSnipeItAxios(secret);
+        try {
+            const response = await axiosInstance.patch(`/hardware/${id}`, updateData);
             return { success: true, data: response.data };
         } catch (error) {
             return getErrorMessage(error);
