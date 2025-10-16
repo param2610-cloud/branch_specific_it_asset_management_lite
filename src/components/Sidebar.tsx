@@ -52,7 +52,10 @@ const Sidebar = () => {
     }
   }, [auth, branchName, fetchBranchName]);
 console.log(auth)
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (auth && auth.logout) {
+      await auth.logout();
+    }
     localStorage.removeItem('token');
     router.push('/login');
   };

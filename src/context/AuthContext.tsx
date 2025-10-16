@@ -5,6 +5,7 @@ import { User } from "@/interface/user";
 interface AuthContextType {
     user: User | null;
     loading: boolean;
+    logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -28,7 +29,19 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
             .finally(() => setLoading(false));
     }, []);
 
-    const value = { user, loading };
+    const logout = async () => {
+        try {
+            await fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+            setUser(null);
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
+
+    const value = { user, loading, logout };
 
     return (
         <AuthContext.Provider value={value}>
