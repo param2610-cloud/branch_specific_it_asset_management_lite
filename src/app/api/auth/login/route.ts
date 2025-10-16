@@ -22,7 +22,8 @@ export const POST= async (req:NextRequest)=>{
                 responseObject.cookies.set('accessToken', response.accessToken, { 
                     httpOnly: false,
                     secure: process.env.NODE_ENV === 'production', // Only secure in production
-                    sameSite: 'strict',
+                    sameSite: 'lax',
+                    domain: '',
                     path: '/' ,
                     maxAge:60*60*24*7
                 });
