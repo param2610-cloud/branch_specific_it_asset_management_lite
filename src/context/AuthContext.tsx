@@ -15,7 +15,6 @@ const AuthContext = createContext<AuthContextType | null>(null)
 function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
-    console.log('AuthProvider rendered, loading:', loading, 'user:', user); 
 
     const refreshUser = useCallback(async (): Promise<User | null> => {
         setLoading(true);
@@ -45,6 +44,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const setAuthenticatedUser = useCallback((authenticatedUser: User | null) => {
         setUser(authenticatedUser);
+        setLoading(false);
     }, []);
 
     useEffect(() => {

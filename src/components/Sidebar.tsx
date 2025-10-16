@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { HomeIcon, ComputerDesktopIcon, UsersIcon, ArrowLeftOnRectangleIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Logo from './Logo';
 import { usePathname, useRouter } from 'next/navigation';
@@ -23,32 +23,41 @@ const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
 
-  const fetchBranchName = useCallback(async () => {
-    if (auth && auth.user?.locationId) {
-      try {
-        const response = await axios.get(`/api/locations/${auth.user.locationId}`);
-        console.log('Branch name response:', response);
-        if (response.status === 200) {
-          return response.data.name;
-        }
-      } catch (error) {
-        console.error('Failed to fetch branch name:', error);
-        return 'Unknown Branch';
-      }
-    }
-    return 'Unknown Branch'; 
+  React.useEffect(() => {
+    setMounted(true);
   }, []);
 
   React.useEffect(() => {
-    setMounted(true);
-    if (auth?.user?.locationId) {
-      fetchBranchName().then(name => {
-        setBranchName(name);
-      });
-    } else if (auth && !auth.loading) {
-      setBranchName('Unknown Branch');
-    }
-  }, [auth?.user?.locationId, auth?.loading, fetchBranchName]);
+    const loadBranchName = async () => {
+      if (!auth) {
+        return;
+      }
+
+      const locationId = auth.user?.locationId ?? auth.user?.location?.id;
+      if (!locationId) {
+        if (!auth.loading) {
+          setBranchName('Unknown Branch');
+        }
+        return;
+      }
+
+      try {
+        const response = await axios.get(`/api/locations/${locationId}`);
+        if (response.status === 200 && typeof response.data?.name === 'string') {
+          setBranchName(response.data.name);
+        } else if (!auth.loading) {
+          setBranchName('Unknown Branch');
+        }
+      } catch (error) {
+        console.error('Failed to fetch branch name:', error);
+        if (!auth.loading) {
+          setBranchName('Unknown Branch');
+        }
+      }
+    };
+
+    void loadBranchName();
+  }, [auth]);
   const handleLogout = async () => {
     if (auth && auth.logout) {
       await auth.logout();

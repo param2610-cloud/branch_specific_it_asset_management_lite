@@ -1,41 +1,73 @@
-import { loadUsers } from "@/data/db"
-import bcrypt from 'bcryptjs';
+import { loadUsers } from "@/data/db";
+import bcrypt from "bcryptjs";
 import { generateAccessToken } from "./token/token";
 
-export async function loginUser(username:string,password:string){
+type SanitizedUser = {
+    username: string;
+    name?: string;
+    email?: string;
+    locationId?: number;
+};
+
+type LoginResult = {
+    message: string;
+    status: number;
+    user?: SanitizedUser;
+    accessToken?: string;
+};
+
+export async function loginUser(username: string, password: string): Promise<LoginResult> {
     try {
-        const users = loadUsers()
-        const findUser= users.find(user=>user.username==username)
-        if(!findUser){
+        const users = loadUsers();
+        const userRecord = users.find((user) => user.username === username);
+
+        if (!userRecord) {
             return {
-                message:"Username is not found;",
-                status:402
-            }
+                message: "User not found.",
+                status: 404,
+            };
         }
-        const accessToken = generateAccessToken(findUser.username);
-        if(findUser.password && await bcrypt.compare(password, findUser.password)){
+
+        if (!userRecord.password) {
             return {
-                message:"User is validated.",
-                user:findUser,
-                accessToken,
-                status:200
-            }
-        }else{
-            return {
-                message:"User is unauthorized",
-                status:401
-            }
+                message: "Credentials are misconfigured for this account.",
+                status: 500,
+            };
         }
-    } catch (error) {
-        console.log(error)
+
+        const passwordMatches = await bcrypt.compare(password, userRecord.password);
+
+        if (!passwordMatches) {
+            return {
+                message: "Invalid username or password.",
+                status: 401,
+            };
+        }
+
+        const accessToken = generateAccessToken(userRecord.username);
+        const sanitizedUser: SanitizedUser = {
+            username: userRecord.username,
+            name: userRecord.name,
+            email: userRecord.email,
+            locationId: userRecord.locationId,
+        };
+
         return {
-            message:"Unexpected Error happens.",
-            status:500
-        }
+            message: "User authenticated successfully.",
+            user: sanitizedUser,
+            accessToken,
+            status: 200,
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            message: "Unexpected error occurred while authenticating.",
+            status: 500,
+        };
     }
     // find that user in main db with that username
-    // if exists then validate password from user.json 
-    // if matched then return cookies with 1 day limit 
+    // if exists then validate password from user.json
+    // if matched then return cookies with 1 day limit
     // navigate to protected area
 }
 

@@ -7,7 +7,6 @@ import Logo from '@/components/Logo';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import { ArrowRightIcon, EyeIcon, EyeSlashIcon, KeyIcon, UserIcon } from '@heroicons/react/24/solid';
 import { AuthContext } from '@/context/AuthContext';
-import type { User } from '@/interface/user';
 
 const LoginPage = () => {
   const [step, setStep] = useState(1);
@@ -65,13 +64,10 @@ const LoginPage = () => {
         password,
       }, { withCredentials: true });
       if (response.status === 200) {
-        const payload = response.data as { user?: User };
-        if (auth && payload.user) {
-          auth.setAuthenticatedUser(payload.user);
+        if (auth) {
+          await auth.refreshUser();
         }
-        if (auth && auth.user) {
-          router.replace('/dashboard');
-        }
+        router.replace('/dashboard');
         return;
       }
     } catch (err: unknown) {
