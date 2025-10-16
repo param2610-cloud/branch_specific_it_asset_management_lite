@@ -14,7 +14,9 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('AuthProvider rendered, loading:', loading, 'user:', user); 
 
     useEffect(() => {
-        fetch('/api/auth/user')
+        fetch('/api/auth/user', {
+            credentials: 'include' // Include cookies in the request
+        })
             .then(res => res.json())
             .then(data => {
                 if (data.user) {

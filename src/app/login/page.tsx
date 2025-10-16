@@ -17,11 +17,18 @@ const LoginPage = () => {
 
     useEffect(() => {
       setIsLoading(true);
-        const token = localStorage.getItem('token');
-        if (token) {
-            router.push('/dashboard');
-        }
-        setIsLoading(false);
+        // Check if user is already authenticated by trying to fetch user data
+        fetch('/api/auth/user', { credentials: 'include' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.user) {
+                    router.push('/dashboard');
+                }
+            })
+            .catch(() => {
+                // User not authenticated, stay on login page
+            })
+            .finally(() => setIsLoading(false));
     }, [router]);
   const handleUsernameSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,9 +62,8 @@ const LoginPage = () => {
       const response = await axios.post('/api/auth/login', {
         username,
         password,
-      });
+      }, { withCredentials: true }); // Include credentials
       if (response.status === 200) {
-        localStorage.setItem('token', response.data.accessToken);
         router.push('/dashboard');
       }
     } catch (err: unknown) {

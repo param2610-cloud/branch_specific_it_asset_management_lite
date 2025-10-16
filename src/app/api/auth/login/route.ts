@@ -19,7 +19,13 @@ export const POST= async (req:NextRequest)=>{
         if(response.status==200){
             const responseObject= NextResponse.json(response, {status: 200});
             if (response.accessToken) {
-                responseObject.cookies.set('accessToken', response.accessToken, { httpOnly: true,secure:true, path: '/' ,maxAge:60*60*24*7});
+                responseObject.cookies.set('accessToken', response.accessToken, { 
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production', // Only secure in production
+                    sameSite: 'lax',
+                    path: '/' ,
+                    maxAge:60*60*24*7
+                });
             }
             return responseObject;
         }
