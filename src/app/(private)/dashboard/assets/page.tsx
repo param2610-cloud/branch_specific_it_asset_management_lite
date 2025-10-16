@@ -481,7 +481,7 @@ const AssetsPage = () => {
                     <p className="mt-4 text-gray-300">No assets found.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {filteredAssets.map((asset) => {
                         const isCurrentAction = actionState.assetId === asset.id ? actionState.action : null;
                         const isDeployed = asset.status_label?.status_meta === 'deployed';
