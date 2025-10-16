@@ -27,10 +27,11 @@ export const POST = async (req: NextRequest) => {
             user: authResult.user,
         };
 
+        const isHttps = req.nextUrl.protocol === "https:" || req.headers.get("x-forwarded-proto") === "https";
         const response = NextResponse.json(responsePayload, { status: 200 });
         response.cookies.set("accessToken", authResult.accessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: isHttps,
             sameSite: "lax",
             path: "/",
             maxAge: 60 * 60 * 24, // 24 hours to match JWT expiry
