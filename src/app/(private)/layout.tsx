@@ -1,8 +1,8 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { useRouter } from 'next/navigation';
-import { AuthProvider } from '@/context/AuthContext';
+import { AuthContext } from '@/context/AuthContext';
 
 export default function PrivateLayout({
     children,
@@ -10,22 +10,28 @@ export default function PrivateLayout({
     children: React.ReactNode;
 }) {
     const router = useRouter();
+    const auth = useContext(AuthContext);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
+        if (!auth?.loading && !auth?.user) {
             router.push('/login');
         }
-    }, [router]);
+    }, [auth?.loading, auth?.user, router]);
+
+    if (auth?.loading) {
+        return <div>Loading...</div>; // Or a proper loading component
+    }
+
+    if (!auth?.user) {
+        return null; // Will redirect
+    }
 
     return (
         <div className="flex h-screen bg-neutral-dark-gray">
-            <AuthProvider >
-                <Sidebar />
-                <main className="flex-1 overflow-y-auto p-8">
-                    {children}
-                </main>
-            </AuthProvider>
+            <Sidebar />
+            <main className="flex-1 overflow-y-auto p-8">
+                {children}
+            </main>
         </div>
     );
 }
