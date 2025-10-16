@@ -521,17 +521,19 @@ const AssetsPage = () => {
                                             <span>Assigned To: <span className="font-semibold text-primary">{(asset.assigned_to as { name: string })?.name}</span></span>
                                         </div>
                                     )}
-                                    <div className="flex items-center">
-                                        <BuildingOffice2Icon className="mr-2 h-5 w-5 text-support"/>
-                                        <span>Location: <span className="font-semibold text-primary">{asset.location?.name}</span></span>
-                                    </div>
+                                    {asset.location?.name && (
+                                        <div className="flex items-center">
+                                            <BuildingOffice2Icon className="mr-2 h-5 w-5 text-support"/>
+                                            <span>Location: <span className="font-semibold text-primary">{asset.location.name}</span></span>
+                                        </div>
+                                    )}
                                     <div className="pt-2 text-xs text-neutral-dark-gray/60">
                                         <p>Serial: {asset.serial || 'N/A'}</p>
                                         <p>Last Update: {asset.updated_at?.formatted}</p>
                                     </div>
                                 </div>
 
-                                <div className="flex justify-end gap-2 border-t border-neutral-light-gray/60 bg-neutral-base px-5 py-4">
+                                <div className="flex flex-wrap justify-end gap-2 border-t border-neutral-light-gray/60 bg-neutral-base px-5 py-4">
                                     <button
                                         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                                         onClick={() => router.push(`/dashboard/assets/${asset.id}`)}
@@ -548,7 +550,7 @@ const AssetsPage = () => {
                                             Checkout
                                         </button>
                                     )}
-                                    {asset.available_actions?.checkin && (
+                                    {asset.available_actions?.checkin && asset.assigned_to && (
                                         <button
                                             className="btn-outline text-sm"
                                             onClick={() => handleSelectAction(asset, 'checkin')}
