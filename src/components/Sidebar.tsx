@@ -24,10 +24,9 @@ const Sidebar = () => {
   
 
   const fetchBranchName = useCallback(async () => {
-    console.log(auth)
-    if (auth && auth.user?.location?.id) {
+    if (auth && auth.user?.locationId) {
       try {
-        const response = await axios.get(`/api/locations/${auth.user.location.id}`);
+        const response = await axios.get(`/api/locations/${auth.user.locationId}`);
         console.log('Branch name response:', response);
         if (response.status === 200) {
           return response.data.name;
@@ -38,20 +37,18 @@ const Sidebar = () => {
       }
     }
     return 'Unknown Branch'; 
-  }, [auth]);
+  }, []);
 
   React.useEffect(() => {
     setMounted(true);
-    if (auth && !auth.loading && auth.user?.location?.id && branchName === 'Loading...') {
-      console.log('Auth user data:', auth.user);
+    if (auth?.user?.locationId) {
       fetchBranchName().then(name => {
         setBranchName(name);
       });
-    } else if (auth && !auth.loading && !auth.user?.location?.id) {
+    } else if (auth && !auth.loading) {
       setBranchName('Unknown Branch');
     }
-  }, [auth, branchName, fetchBranchName]);
-console.log(auth)
+  }, [auth?.user?.locationId, auth?.loading, fetchBranchName]);
   const handleLogout = async () => {
     if (auth && auth.logout) {
       await auth.logout();

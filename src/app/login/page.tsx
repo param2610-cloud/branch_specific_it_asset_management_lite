@@ -63,20 +63,15 @@ const LoginPage = () => {
       const response = await axios.post('/api/auth/login', {
         username,
         password,
-      }, { withCredentials: true }); // Include credentials
+      }, { withCredentials: true });
       if (response.status === 200) {
         const payload = response.data as { user?: User };
-        if (auth) {
-          if (payload.user) {
-            auth.setAuthenticatedUser(payload.user);
-          }
-          const refreshedUser = await auth.refreshUser();
-          if (!refreshedUser) {
-            setError('Unable to verify session. Please try again.');
-            return;
-          }
+        if (auth && payload.user) {
+          auth.setAuthenticatedUser(payload.user);
         }
-        router.replace('/dashboard');
+        if (auth && auth.user) {
+          router.replace('/dashboard');
+        }
         return;
       }
     } catch (err: unknown) {
