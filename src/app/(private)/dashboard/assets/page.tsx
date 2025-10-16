@@ -224,6 +224,7 @@ const AssetsPage = () => {
                 name: status.name,
                 status_meta: status.status_meta,
             }));
+            console.log(formatted)
             setStatusLabels(formatted);
         } catch (error) {
             console.error('Failed to load status labels', error);
@@ -583,13 +584,13 @@ const AssetsPage = () => {
                                     <option value="">Select User...</option>
                                     {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                                 </select>
-                                <select 
-                                    value={checkoutForm.status_id} 
-                                    onChange={(e) => setCheckoutForm(p => ({...p, status_id: e.target.value}))} 
+                                <select
+                                    value={checkoutForm.status_id}
+                                    onChange={(e) => setCheckoutForm(p => ({...p, status_id: e.target.value}))}
                                     className="w-full rounded-xl border border-gray-300 bg-white p-3 text-sm focus:border-blue-500 focus:outline-none"
                                 >
                                     <option value="">Select Status...</option>
-                                    {statusLabels.filter(s => s.status_meta === 'deployed').map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                    {statusLabels.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                                 </select>
                                 <input 
                                     type="date" 
@@ -633,13 +634,13 @@ const AssetsPage = () => {
                                     <option value="">Select Location...</option>
                                     {locations.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                                 </select>
-                                <select 
-                                    value={checkinForm.status_id} 
-                                    onChange={(e) => setCheckinForm(p => ({...p, status_id: e.target.value}))} 
+                                <select
+                                    value={checkinForm.status_id}
+                                    onChange={(e) => setCheckinForm(p => ({...p, status_id: e.target.value}))}
                                     className="w-full rounded-xl border border-gray-300 bg-white p-3 text-sm focus:border-blue-500 focus:outline-none"
                                 >
                                     <option value="">Select Status...</option>
-                                    {statusLabels.filter(s => s.status_meta !== 'deployed').map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                    {statusLabels.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                                 </select>
                                 <textarea 
                                     value={checkinForm.note} 
