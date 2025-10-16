@@ -20,6 +20,7 @@ import {
 import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { User } from '@/interface/user';
+import { fixImageUrl } from '@/lib/url';
 
 interface Asset {
     id: number;
@@ -434,7 +435,7 @@ const AssetDetailsPage = () => {
                             <h3 className="text-xl font-bold text-white mb-4">Image</h3>
                             <div className="relative w-full h-64">
                                 <Image 
-                                    src={asset.image} 
+                                    src={fixImageUrl(asset.image)} 
                                     alt={asset.name} 
                                     fill
                                     className="object-cover rounded-lg"

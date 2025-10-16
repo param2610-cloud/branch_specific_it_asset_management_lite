@@ -18,6 +18,7 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { User } from '@/interface/user';
+import { fixImageUrl } from '@/lib/url';
 
 interface SnipeUser {
     id: number;
@@ -217,7 +218,7 @@ const UserDetailPage = () => {
                         <div className="flex flex-col items-center mb-6">
                             {user.avatar ? (
                                 <Image 
-                                    src={user.avatar} 
+                                    src={fixImageUrl(user.avatar)} 
                                     alt={user.name}
                                     width={96}
                                     height={96}

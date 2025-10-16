@@ -7,6 +7,7 @@ import { ComputerDesktopIcon, UserGroupIcon, ChartBarIcon, CheckCircleIcon, XCir
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { User } from '@/interface/user';
+import { fixImageUrl } from '@/lib/url';
 
 interface SnipeUser {
     id: number;
@@ -176,7 +177,7 @@ const DashboardPage = () => {
                             <motion.div key={user.id} whileHover={{ scale: 1.01 }} onClick={() => router.push(`/dashboard/users/${user.id}`)} className="bg-gray-700/50 rounded-xl p-4 cursor-pointer hover:bg-gray-700 transition-all">
                                 <div className="flex items-center gap-4">
                                     {user.avatar ? (
-                                        <Image src={user.avatar} alt={user.name} width={40} height={40} className="h-10 w-10 rounded-full object-cover" />
+                                        <Image src={fixImageUrl(user.avatar)} alt={user.name} width={40} height={40} className="h-10 w-10 rounded-full object-cover" />
                                     ) : (
                                         <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                                             <span className="text-white font-bold">{user.name?.charAt(0)?.toUpperCase() || '?'}</span>
