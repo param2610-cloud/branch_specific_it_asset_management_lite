@@ -7,9 +7,9 @@ export const POST = async () => {
             httpOnly: false,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
-            domain: '',
             path: '/',
-            maxAge: 0 // Expire immediately
+            maxAge: 0,
+            expires: new Date(0)
         });
         return response;
     } catch (error) {

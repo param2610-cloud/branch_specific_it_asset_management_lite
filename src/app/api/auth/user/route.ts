@@ -2,6 +2,8 @@ import { ApiDict } from "@/data/snipe_it_api/ApiDict";
 import { secretKeyFetch, verifyToken } from "@/lib/token/token";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 export const GET=async(req:NextRequest)=>{
     try {
         const token = req.cookies.get('accessToken')?.value;

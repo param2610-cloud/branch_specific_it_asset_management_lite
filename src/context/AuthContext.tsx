@@ -17,7 +17,8 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         fetch('/api/auth/user', {
-            credentials: 'include' // Include cookies in the request
+            credentials: 'include', // Include cookies in the request
+            cache: 'no-store'
         })
             .then(res => res.json())
             .then(data => {
@@ -33,8 +34,12 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             await fetch('/api/auth/logout', {
                 method: 'POST',
-                credentials: 'include'
+                credentials: 'include',
+                cache: 'no-store'
             });
+            if (typeof window !== 'undefined') {
+                document.cookie = 'accessToken=; Max-Age=0; path=/';
+            }
             setUser(null);
         } catch (error) {
             console.error('Logout failed:', error);

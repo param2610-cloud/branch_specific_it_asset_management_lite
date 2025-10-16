@@ -18,7 +18,7 @@ const LoginPage = () => {
     useEffect(() => {
       setIsLoading(true);
         // Check if user is already authenticated by trying to fetch user data
-        fetch('/api/auth/user', { credentials: 'include' })
+    fetch('/api/auth/user', { credentials: 'include', cache: 'no-store' })
             .then(res => res.json())
             .then(data => {
                 if (data.user) {
