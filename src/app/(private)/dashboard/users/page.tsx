@@ -11,6 +11,7 @@ import {
     ComputerDesktopIcon
 } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface SnipeUser {
     id: number;
@@ -187,9 +188,11 @@ const UsersPage = () => {
                             <div className="flex items-center gap-4 mb-4">
                                 <div className="flex-shrink-0">
                                     {user.avatar ? (
-                                        <img 
+                                        <Image 
                                             src={user.avatar} 
                                             alt={user.name}
+                                            width={48}
+                                            height={48}
                                             className="h-12 w-12 rounded-full object-cover"
                                         />
                                     ) : (

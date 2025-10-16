@@ -1,8 +1,9 @@
 import React from 'react';
+import Image from 'next/image';
 
 const Logo = () => {
   return (
-    <img src="/logo.png" alt="AUM Capital" className="h-12 w-auto" />
+    <Image src="/logo.png" alt="AUM Capital" width={48} height={48} className="h-12 w-auto" />
   );
 };
 

@@ -15,7 +15,9 @@ import {
     IdentificationIcon,
     MapPinIcon
 } from '@heroicons/react/24/outline';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { User } from '@/interface/user';
 
 interface SnipeUser {
     id: number;
@@ -82,7 +84,7 @@ interface UserAsset {
         id: number;
         name: string;
     };
-    assigned_to?: any;
+    assigned_to?: User;
     image?: string;
 }
 
@@ -214,9 +216,11 @@ const UserDetailPage = () => {
                         {/* Avatar */}
                         <div className="flex flex-col items-center mb-6">
                             {user.avatar ? (
-                                <img 
+                                <Image 
                                     src={user.avatar} 
                                     alt={user.name}
+                                    width={96}
+                                    height={96}
                                     className="h-24 w-24 rounded-full object-cover mb-4"
                                 />
                             ) : (
@@ -361,9 +365,11 @@ const UserDetailPage = () => {
                                             {/* Asset Image or Icon */}
                                             <div className="flex-shrink-0">
                                                 {asset.image ? (
-                                                    <img 
+                                                    <Image 
                                                         src={asset.image} 
                                                         alt={asset.name}
+                                                        width={64}
+                                                        height={64}
                                                         className="h-16 w-16 rounded-lg object-cover"
                                                     />
                                                 ) : (
@@ -428,7 +434,7 @@ const UserDetailPage = () => {
     );
 };
 
-const InfoRow: React.FC<{ icon: any; label: string; value: string }> = ({ icon: Icon, label, value }) => (
+const InfoRow: React.FC<{ icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; label: string; value: string }> = ({ icon: Icon, label, value }) => (
     <div className="flex items-start gap-3">
         <Icon className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
         <div className="flex-1 min-w-0">

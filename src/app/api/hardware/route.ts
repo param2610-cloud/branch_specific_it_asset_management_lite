@@ -23,7 +23,8 @@ export async function GET(req: NextRequest) {
 
     const result = await ApiDict.allAssetFetch(userData.secret, userData.locationId, params);
     if (result.success) {
-        return new Response(JSON.stringify(result.data.rows), { status: 200 });
+        const data = result.data as { rows?: unknown[] };
+        return new Response(JSON.stringify(data.rows || []), { status: 200 });
     } else {
         return new Response(`API Error: ${result.error}`, { status: 500 });
     }

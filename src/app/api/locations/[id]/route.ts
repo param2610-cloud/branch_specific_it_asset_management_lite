@@ -17,9 +17,6 @@ export const GET = async(req: NextRequest) => {
             return new Response("User data not found", { status: 403 });
         }
     
-        const url = new URL(req.url);
-        const params = Object.fromEntries(url.searchParams);
-
         const result = await ApiDict.getSpecificLocation(userData.secret, userData.locationId);
         if (result.success) {
             return new Response(JSON.stringify(result.data), { status: 200 });

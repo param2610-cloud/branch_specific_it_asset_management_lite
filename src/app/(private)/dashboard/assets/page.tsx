@@ -1,12 +1,13 @@
 'use client';
 
 import axios, { isAxiosError } from 'axios';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BuildingOffice2Icon, CheckCircleIcon, ComputerDesktopIcon, ExclamationTriangleIcon, InformationCircleIcon, UserCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
+import { BuildingOffice2Icon, CheckCircleIcon, ComputerDesktopIcon, InformationCircleIcon, UserCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { EyeIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 import { Dialog } from '@headlessui/react';
+import { Asset } from '@/interface/asset';
 
 type ActionType = 'checkout' | 'checkin';
 
@@ -44,7 +45,7 @@ const extractRows = <T,>(payload: unknown): T[] => {
 
 const extractApiErrorMessage = (error: unknown): string => {
     if (isAxiosError(error)) {
-        const data = error.response?.data as any;
+        const data = error.response?.data as unknown;
         const fallback = error.message || 'Request failed.';
         if (!data) {
             return fallback;
@@ -56,16 +57,16 @@ const extractApiErrorMessage = (error: unknown): string => {
 
         const parts: string[] = [];
 
-        if (typeof data.message === 'string') {
-            parts.push(data.message);
+        if (typeof (data as Record<string, unknown>).message === 'string') {
+            parts.push((data as Record<string, unknown>).message as string);
         }
 
-        if (typeof data.error === 'string') {
-            parts.push(data.error);
+        if (typeof (data as Record<string, unknown>).error === 'string') {
+            parts.push((data as Record<string, unknown>).error as string);
         }
 
-        if (data.messages && typeof data.messages === 'object') {
-            const details = Object.entries(data.messages as Record<string, unknown>)
+        if ((data as Record<string, unknown>).messages && typeof (data as Record<string, unknown>).messages === 'object') {
+            const details = Object.entries((data as Record<string, unknown>).messages as Record<string, unknown>)
                 .flatMap(([field, value]) => {
                     if (Array.isArray(value)) {
                         return value.map((item) => `${field}: ${String(item)}`);
@@ -410,7 +411,7 @@ const AssetsPage = () => {
             setActionLoading(false);
         }
     };
-    const searchAssets = (query: string) => {
+    const searchAssets = useCallback((query: string) => {
         if (query) {
             const filteredAssets = assets.filter((asset)=>{
                 return asset.name.toLowerCase().includes(query.toLowerCase()) || (asset.asset_tag && asset.asset_tag.toLowerCase().includes(query.toLowerCase())) || (asset.serial && asset.serial.toLowerCase().includes(query.toLowerCase())) || (asset.model?.name && asset.model.name.toLowerCase().includes(query.toLowerCase())) || (asset.status_label?.name && asset.status_label.name.toLowerCase().includes(query.toLowerCase())) || (asset.location?.name && asset.location.name.toLowerCase().includes(query.toLowerCase())) || (typeof asset.assigned_to === 'object' && asset.assigned_to !== null && 'name' in asset.assigned_to && (asset.assigned_to as { name: string }).name.toLowerCase().includes(query.toLowerCase()));
@@ -420,10 +421,10 @@ const AssetsPage = () => {
         if(!query){
             setFilteredAssets(assets);
         }
-    }
+    }, [assets]);
     useEffect(()=>{
         searchAssets(input);
-    },[input])
+    },[input, searchAssets])
 
     React.useEffect(() => {
         void fetchAsset();

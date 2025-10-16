@@ -1,6 +1,6 @@
 import { ApiDict } from "@/data/snipe_it_api/ApiDict";
 import { secretKeyFetch, verifyToken } from "@/lib/token/token";
-import { NextRequest, NextResponse } from "next/server"
+import { NextRequest } from "next/server"
 
 export async function GET(req:NextRequest){
     try {
@@ -20,7 +20,8 @@ export async function GET(req:NextRequest){
         const params = Object.fromEntries(url.searchParams);
         const result = await ApiDict.getCompanies(userData.secret, params);
         if (result.success) {
-            return new Response(JSON.stringify(result.data.rows), {status: 200});
+            const data = result.data as { rows?: unknown[] };
+            return new Response(JSON.stringify(data.rows || []), {status: 200});
         } else {
             return new Response(JSON.stringify({message:`API Error: ${result.error}`}), {status: 500});
         }

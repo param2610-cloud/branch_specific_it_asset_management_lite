@@ -14,17 +14,17 @@ type ApiFailure = {
 
 type ApiResult<T> = ApiSuccess<T> | ApiFailure;
 
-const extractRows = (payload: unknown): any[] => {
+const extractRows = (payload: unknown): unknown[] => {
     if (Array.isArray(payload)) {
         return payload;
     }
     if (payload && typeof payload === "object" && Array.isArray((payload as { rows?: unknown[] }).rows)) {
-        return ((payload as { rows?: unknown[] }).rows as any[]) ?? [];
+        return ((payload as { rows?: unknown[] }).rows as unknown[]) ?? [];
     }
     return [];
 };
 
-const mergeRowsIntoPayload = (payload: unknown, rows: any[]): unknown => {
+const mergeRowsIntoPayload = (payload: unknown, rows: unknown[]): unknown => {
     if (payload && typeof payload === "object") {
         const merged = { ...(payload as Record<string, unknown>), rows } as Record<string, unknown>;
 
@@ -44,8 +44,8 @@ const mergeRowsIntoPayload = (payload: unknown, rows: any[]): unknown => {
     return rows;
 };
 
-const dedupeById = (rows: any[]): any[] => {
-    const seen = new Map<number | string, any>();
+const dedupeById = (rows: unknown[]): unknown[] => {
+    const seen = new Map<number | string, unknown>();
     for (const item of rows) {
         const id = item && typeof item === "object" ? (item as { id?: number | string }).id : undefined;
         if (id === undefined) {
@@ -78,7 +78,7 @@ const extractLocationName = (payload: unknown): string | undefined => {
 
 const getErrorMessage = (error: unknown): ApiFailure => {
     if (error instanceof AxiosError) {
-        const data = error.response?.data as any;
+        const data = error.response?.data as unknown;
         if (!data) {
             return { success: false, error: error.message };
         }
@@ -89,18 +89,18 @@ const getErrorMessage = (error: unknown): ApiFailure => {
 
         const messageParts: string[] = [];
 
-        if (typeof data.message === "string") {
-            messageParts.push(data.message);
+        if (typeof (data as Record<string, unknown>).message === "string") {
+            messageParts.push((data as Record<string, unknown>).message as string);
         }
 
-        if (typeof data.error === "string") {
-            messageParts.push(data.error);
+        if (typeof (data as Record<string, unknown>).error === "string") {
+            messageParts.push((data as Record<string, unknown>).error as string);
         }
 
         const fieldContainers = ["messages", "errors"] as const;
         for (const key of fieldContainers) {
-            if (data[key] && typeof data[key] === "object") {
-                const details = Object.entries(data[key] as Record<string, unknown>)
+            if ((data as Record<string, unknown>)[key] && typeof (data as Record<string, unknown>)[key] === "object") {
+                const details = Object.entries((data as Record<string, unknown>)[key] as Record<string, unknown>)
                 .flatMap(([field, value]) => {
                     if (Array.isArray(value)) {
                         return value.map((item) => `${field}: ${String(item)}`);
@@ -128,13 +128,13 @@ const getErrorMessage = (error: unknown): ApiFailure => {
 };
 
 export const ApiDict = {
-    async allAssetFetch(secret: string, locationId: number, params?: Record<string, unknown>): Promise<ApiResult<any>> {
+    async allAssetFetch(secret: string, locationId: number, params?: Record<string, unknown>): Promise<ApiResult<unknown>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const baseParams: Record<string, unknown> = { ...params };
 
             let primaryData: unknown;
-            let combinedRows: any[] = [];
+            let combinedRows: unknown[] = [];
 
             if (typeof locationId === "number" && !Number.isNaN(locationId)) {
                 baseParams.location_id = locationId;
@@ -181,7 +181,7 @@ export const ApiDict = {
             return getErrorMessage(error);
         }
     },
-    async singleAssetFetch(secret: string, locationId: number, id: number): Promise<ApiResult<any>> {
+    async singleAssetFetch(secret: string, locationId: number, id: number): Promise<ApiResult<unknown>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const response = await axiosInstance.get(`/hardware/${id}`);
@@ -190,7 +190,7 @@ export const ApiDict = {
             return getErrorMessage(error);
         }
     },
-    async checkoutAsset(secret: string, locationId: number, id: number, checkoutData: Record<string, unknown>): Promise<ApiResult<any>> {
+    async checkoutAsset(secret: string, locationId: number, id: number, checkoutData: Record<string, unknown>): Promise<ApiResult<unknown>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const payload: Record<string, unknown> = { ...checkoutData };
@@ -210,7 +210,7 @@ export const ApiDict = {
             return getErrorMessage(error);
         }
     },
-    async checkinAsset(secret: string, locationId: number, id: number, checkinData: Record<string, unknown>): Promise<ApiResult<any>> {
+    async checkinAsset(secret: string, locationId: number, id: number, checkinData: Record<string, unknown>): Promise<ApiResult<unknown>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const payload: Record<string, unknown> = { ...checkinData };
@@ -230,7 +230,7 @@ export const ApiDict = {
             return getErrorMessage(error);
         }
     },
-    async listOfUsers(secret: string, locationId: number, params?: Record<string, unknown>): Promise<ApiResult<any>> {
+    async listOfUsers(secret: string, locationId: number, params?: Record<string, unknown>): Promise<ApiResult<unknown>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const response = await axiosInstance.get("/users", { params });
@@ -239,7 +239,7 @@ export const ApiDict = {
             return getErrorMessage(error);
         }
     },
-    async getLocations(secret: string, params?: Record<string, unknown>): Promise<ApiResult<any>> {
+    async getLocations(secret: string, params?: Record<string, unknown>): Promise<ApiResult<unknown>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const response = await axiosInstance.get("/locations", { params });
@@ -248,7 +248,7 @@ export const ApiDict = {
             return getErrorMessage(error);
         }
     },
-    async getStatusLabels(secret: string, params?: Record<string, unknown>): Promise<ApiResult<any>> {
+    async getStatusLabels(secret: string, params?: Record<string, unknown>): Promise<ApiResult<unknown>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const response = await axiosInstance.get("/statuslabels", { params });
@@ -257,7 +257,7 @@ export const ApiDict = {
             return getErrorMessage(error);
         }
     },
-    async createUser(secret: string, locationId: number, userData: Record<string, unknown>): Promise<ApiResult<any>> {
+    async createUser(secret: string, locationId: number, userData: Record<string, unknown>): Promise<ApiResult<unknown>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const response = await axiosInstance.post("/users", { ...userData, location_id: locationId });
@@ -266,7 +266,7 @@ export const ApiDict = {
             return getErrorMessage(error);
         }
     },
-    async getSpecificUser(secret: string, id: number): Promise<ApiResult<any>> {
+    async getSpecificUser(secret: string, id: number): Promise<ApiResult<unknown>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const response = await axiosInstance.get(`/users/${id}`);
@@ -275,7 +275,7 @@ export const ApiDict = {
             return getErrorMessage(error);
         }
     },
-    async getUserAssets(secret: string, id: number, params?: Record<string, unknown>): Promise<ApiResult<any>> {
+    async getUserAssets(secret: string, id: number, params?: Record<string, unknown>): Promise<ApiResult<unknown>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const response = await axiosInstance.get(`/users/${id}/assets`, { params });
@@ -284,7 +284,7 @@ export const ApiDict = {
             return getErrorMessage(error);
         }
     },
-    async getCompanies(secret: string, params?: Record<string, unknown>): Promise<ApiResult<any>> {
+    async getCompanies(secret: string, params?: Record<string, unknown>): Promise<ApiResult<unknown>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const response = await axiosInstance.get("/companies", { params });
@@ -293,7 +293,7 @@ export const ApiDict = {
             return getErrorMessage(error);
         }
     },
-    async findUserByUsername(secret: string, username: string): Promise<ApiResult<any>> {
+    async findUserByUsername(secret: string, username: string): Promise<ApiResult<unknown>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const response = await axiosInstance.get("/users", { params: { username } });
@@ -302,7 +302,7 @@ export const ApiDict = {
             return getErrorMessage(error);
         }
     },
-    async updateAsset(secret: string, locationId: number, id: number, updateData: Record<string, unknown>): Promise<ApiResult<any>> {
+    async updateAsset(secret: string, locationId: number, id: number, updateData: Record<string, unknown>): Promise<ApiResult<unknown>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const response = await axiosInstance.patch(`/hardware/${id}`, updateData);
@@ -311,7 +311,7 @@ export const ApiDict = {
             return getErrorMessage(error);
         }
     },
-    async getSpecificLocation(secret: string, id: number): Promise<ApiResult<any>> {
+    async getSpecificLocation(secret: string, id: number): Promise<ApiResult<unknown>> {
         const axiosInstance = createSnipeItAxios(secret);
         try {
             const response = await axiosInstance.get(`/locations/${id}`);

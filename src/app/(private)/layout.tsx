@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { useRouter } from 'next/navigation';
-import { AuthContext, AuthProvider } from '@/context/AuthContext';
+import { AuthProvider } from '@/context/AuthContext';
 
 export default function PrivateLayout({
     children,

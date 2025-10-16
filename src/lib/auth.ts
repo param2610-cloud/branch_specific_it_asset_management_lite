@@ -1,6 +1,6 @@
 import { loadUsers } from "@/data/db"
 import bcrypt from 'bcryptjs';
-import { generateAccessToken, verifyToken } from "./token/token";
+import { generateAccessToken } from "./token/token";
 
 export async function loginUser(username:string,password:string){
     try {
@@ -13,7 +13,7 @@ export async function loginUser(username:string,password:string){
             }
         }
         const accessToken = generateAccessToken(findUser.username);
-        if(await bcrypt.compare(password,findUser.password)){
+        if(findUser.password && await bcrypt.compare(password, findUser.password)){
             return {
                 message:"User is validated.",
                 user:findUser,

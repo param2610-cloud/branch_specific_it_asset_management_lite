@@ -36,7 +36,7 @@ const LoginPage = () => {
         // for now we will just move to next step
         setError('');
         setStep(2);
-    } catch (err) {
+    } catch {
         setError('User not found.');
     }
     setIsLoading(false);
@@ -60,9 +60,9 @@ const LoginPage = () => {
         localStorage.setItem('token', response.data.accessToken);
         router.push('/dashboard');
       }
-    } catch (err: any) {
-        if (err.response) {
-            setError(err.response.data.message || 'Login failed. Please check your credentials.');
+    } catch (err: unknown) {
+        if (axios.isAxiosError(err)) {
+            setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
         } else {
             setError('An unexpected error occurred. Please try again.');
         }
@@ -97,7 +97,7 @@ const LoginPage = () => {
                 transition={{ duration: 0.3 }}
               >
                 <h2 className="mb-1 text-center text-2xl font-heading text-white drop-shadow">Welcome Back!</h2>
-                <p className="mb-6 text-center text-white/80 drop-shadow-sm">Let's get you signed in.</p>
+                <p className="mb-6 text-center text-white/80 drop-shadow-sm">Let&apos;s get you signed in.</p>
                 <form onSubmit={handleUsernameSubmit}>
                   <div className="mb-4">
                     <div className="input-border-animated">

@@ -1,4 +1,6 @@
-interface Asset {
+import { User } from "./user";
+
+export interface Asset {
     id: number;
     name: string;
     asset_tag: string;
@@ -46,7 +48,7 @@ interface Asset {
     image: string | null;
     qr: string | null;
     alt_barcode: string;
-    assigned_to: any | null;
+    assigned_to: User | null;
     warranty_months: number | null;
     warranty_expires: string | null;
     created_at: {
@@ -70,7 +72,7 @@ interface Asset {
     requests_counter: number;
     user_can_checkout: boolean;
     book_value: number | null;
-    custom_fields: Record<string, any>;
+    custom_fields: Record<string, unknown>;
     available_actions: {
         checkout: boolean;
         checkin: boolean;

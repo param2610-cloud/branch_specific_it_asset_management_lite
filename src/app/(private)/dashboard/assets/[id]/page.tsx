@@ -18,6 +18,8 @@ import {
     XCircleIcon
 } from '@heroicons/react/24/outline';
 import { useRouter, useParams } from 'next/navigation';
+import Image from 'next/image';
+import { User } from '@/interface/user';
 
 interface Asset {
     id: number;
@@ -32,7 +34,7 @@ interface Asset {
     company: { id: number; name: string };
     location: { id: number; name: string };
     rtd_location: { id: number; name: string };
-    assigned_to: any | null;
+    assigned_to: User | null;
     notes: string;
     purchase_date: string | { date: string; formatted: string } | null;
     purchase_cost: number | null;
@@ -45,7 +47,7 @@ interface Asset {
     checkin_counter: number;
     checkout_counter: number;
     image: string | null;
-    custom_fields: Record<string, any>;
+    custom_fields: Record<string, unknown>;
 }
 
 interface StatusLabel {
@@ -137,9 +139,10 @@ const AssetDetailsPage = () => {
             setTimeout(() => {
                 setUpdateMessage(null);
             }, 3000);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to update status', err);
-            setUpdateError(err.response?.data || 'Failed to update asset status');
+            const errorMessage = axios.isAxiosError(err) ? err.response?.data || 'Failed to update asset status' : 'Failed to update asset status';
+            setUpdateError(errorMessage);
         } finally {
             setUpdateLoading(false);
         }
@@ -316,7 +319,7 @@ const AssetDetailsPage = () => {
                                     asset.purchase_date 
                                         ? (typeof asset.purchase_date === 'string' 
                                             ? asset.purchase_date 
-                                            : (asset.purchase_date as any).formatted || (asset.purchase_date as any).date)
+                                            : (asset.purchase_date as unknown as { formatted: string }).formatted || (asset.purchase_date as unknown as { date: string }).date)
                                         : 'N/A'
                                 } 
                             />
@@ -332,7 +335,7 @@ const AssetDetailsPage = () => {
                                     asset.warranty_expires 
                                         ? (typeof asset.warranty_expires === 'string' 
                                             ? asset.warranty_expires 
-                                            : (asset.warranty_expires as any).formatted || (asset.warranty_expires as any).date)
+                                            : (asset.warranty_expires as unknown as { formatted: string }).formatted || (asset.warranty_expires as unknown as { date: string }).date)
                                         : 'N/A'
                                 } 
                             />
@@ -429,11 +432,14 @@ const AssetDetailsPage = () => {
                             className="bg-gray-800 rounded-2xl p-6 shadow-xl"
                         >
                             <h3 className="text-xl font-bold text-white mb-4">Image</h3>
-                            <img 
-                                src={asset.image} 
-                                alt={asset.name} 
-                                className="w-full rounded-lg"
-                            />
+                            <div className="relative w-full h-64">
+                                <Image 
+                                    src={asset.image} 
+                                    alt={asset.name} 
+                                    fill
+                                    className="object-cover rounded-lg"
+                                />
+                            </div>
                         </motion.div>
                     )}
                 </div>
@@ -510,7 +516,7 @@ const AssetDetailsPage = () => {
     );
 };
 
-const InfoRow: React.FC<{ icon: any; label: string; value: string }> = ({ icon: Icon, label, value }) => (
+const InfoRow: React.FC<{ icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; label: string; value: string }> = ({ icon: Icon, label, value }) => (
     <div className="flex items-start gap-3">
         <Icon className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
         <div>

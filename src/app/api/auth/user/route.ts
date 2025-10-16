@@ -18,7 +18,12 @@ export const GET=async(req:NextRequest)=>{
         }
         const userData = await ApiDict.findUserByUsername(secretData.secret, decoded.username);
         if (userData.success) {
-            return NextResponse.json({message:"Token is valid", user: userData.data.rows[0]}, {status: 200});
+            const data = userData.data as { rows?: unknown[] };
+            if (data.rows && data.rows.length > 0) {
+                return NextResponse.json({message:"Token is valid", user: data.rows[0]}, {status: 200});
+            } else {
+                return NextResponse.json({message:"User not found"}, {status: 404});
+            }
         } else {
             return NextResponse.json({message:"Failed to fetch user data"}, {status: 500});
         }

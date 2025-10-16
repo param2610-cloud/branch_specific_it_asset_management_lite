@@ -155,4 +155,7 @@ export interface User {
         restore: boolean;
     };
     groups: string | null;
+    password?: string;
+    secret?: string;
+    locationId?: number;
 }

@@ -1,6 +1,6 @@
 'use client';
-import React, { useContext } from 'react';
-import { HomeIcon, ComputerDesktopIcon, UsersIcon, Cog6ToothIcon, ArrowLeftOnRectangleIcon } from '@heroicons/react/24/outline';
+import React, { useCallback, useContext } from 'react';
+import { HomeIcon, ComputerDesktopIcon, UsersIcon, ArrowLeftOnRectangleIcon } from '@heroicons/react/24/outline';
 import Logo from './Logo';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -22,7 +22,7 @@ const Sidebar = () => {
   const [branchName,setBranchName] = React.useState('Loading...');
   
 
-  const fetchBranchName = async () => {
+  const fetchBranchName = useCallback(async () => {
     console.log(auth)
     if (auth && auth.user?.location?.id) {
       try {
@@ -37,7 +37,7 @@ const Sidebar = () => {
       }
     }
     return 'Unknown Branch'; 
-  };
+  }, [auth]);
 
   React.useEffect(() => {
     setMounted(true);
@@ -49,7 +49,7 @@ const Sidebar = () => {
     } else if (auth && !auth.loading && !auth.user?.location?.id) {
       setBranchName('Unknown Branch');
     }
-  }, [auth?.user?.location?.id, auth?.loading]);
+  }, [auth, branchName, fetchBranchName]);
 console.log(auth)
   const handleLogout = () => {
     localStorage.removeItem('token');
