@@ -1,11 +1,13 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '@/components/Logo';
 import AnimatedBackground from '@/components/AnimatedBackground';
-import { ArrowRightIcon, KeyIcon, UserIcon } from '@heroicons/react/24/solid';
+import { ArrowRightIcon, EyeIcon, EyeSlashIcon, KeyIcon, UserIcon } from '@heroicons/react/24/solid';
+import { AuthContext } from '@/context/AuthContext';
+import type { User } from '@/interface/user';
 
 const LoginPage = () => {
   const [step, setStep] = useState(1);
@@ -13,23 +15,22 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [ showPassword, setShowPassword ] = useState(false);
   const router = useRouter();
+  const auth = useContext(AuthContext);
 
     useEffect(() => {
-      setIsLoading(true);
-        // Check if user is already authenticated by trying to fetch user data
-    fetch('/api/auth/user', { credentials: 'include', cache: 'no-store' })
-            .then(res => res.json())
-            .then(data => {
-                if (data.user) {
-                    router.push('/dashboard');
-                }
-            })
-            .catch(() => {
-                // User not authenticated, stay on login page
-            })
-            .finally(() => setIsLoading(false));
-    }, [router]);
+      if (!auth) return;
+      if (auth.loading) {
+        setIsLoading(true);
+        return;
+      }
+
+      setIsLoading(false);
+      if (auth.user) {
+        router.replace('/dashboard');
+      }
+    }, [auth, router]);
   const handleUsernameSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (username.trim() === '') {
@@ -64,7 +65,19 @@ const LoginPage = () => {
         password,
       }, { withCredentials: true }); // Include credentials
       if (response.status === 200) {
-        router.push('/dashboard');
+        const payload = response.data as { user?: User };
+        if (auth) {
+          if (payload.user) {
+            auth.setAuthenticatedUser(payload.user);
+          }
+          const refreshedUser = await auth.refreshUser();
+          if (!refreshedUser) {
+            setError('Unable to verify session. Please try again.');
+            return;
+          }
+        }
+        router.replace('/dashboard');
+        return;
       }
     } catch (err: unknown) {
         if (axios.isAxiosError(err)) {
@@ -72,8 +85,9 @@ const LoginPage = () => {
         } else {
             setError('An unexpected error occurred. Please try again.');
         }
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const variants = {
@@ -150,12 +164,23 @@ const LoginPage = () => {
                       <div className="input-border-animated__inner">
                         <KeyIcon className="h-5 w-5 text-support" />
                         <input
-                          type="password"
+                          type={showPassword ? 'text' : 'password'}
                           placeholder="Password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           className="flex-1 bg-transparent text-white placeholder:text-support/60 focus:outline-none"
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="text-support hover:text-white cursor-pointer ml-2"
+                        >
+                          {showPassword ? (
+                          <EyeSlashIcon className="h-5 w-5" />
+                          ) : (
+                          <EyeIcon className="h-5 w-5" />
+                          )}
+                        </button>
                       </div>
                     </div>
                   </div>

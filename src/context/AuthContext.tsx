@@ -1,11 +1,13 @@
 'use client';
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 import { User } from "@/interface/user";
 
 interface AuthContextType {
     user: User | null;
     loading: boolean;
     logout: () => Promise<void>;
+    refreshUser: () => Promise<User | null>;
+    setAuthenticatedUser: (user: User | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -15,20 +17,39 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
     console.log('AuthProvider rendered, loading:', loading, 'user:', user); 
 
-    useEffect(() => {
-        fetch('/api/auth/user', {
-            credentials: 'include', // Include cookies in the request
-            cache: 'no-store'
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.user) {
-                    setUser(data.user);
-                }
-            })
-            .catch(err => console.error('Failed to fetch user:', err))
-            .finally(() => setLoading(false));
+    const refreshUser = useCallback(async (): Promise<User | null> => {
+        setLoading(true);
+        try {
+            const response = await fetch('/api/auth/user', {
+                credentials: 'include',
+                cache: 'no-store'
+            });
+
+            if (!response.ok) {
+                setUser(null);
+                return null;
+            }
+
+            const data = await response.json();
+            const fetchedUser = (data.user ?? null) as User | null;
+            setUser(fetchedUser);
+            return fetchedUser;
+        } catch (error) {
+            console.error('Failed to fetch user:', error);
+            setUser(null);
+            return null;
+        } finally {
+            setLoading(false);
+        }
     }, []);
+
+    const setAuthenticatedUser = useCallback((authenticatedUser: User | null) => {
+        setUser(authenticatedUser);
+    }, []);
+
+    useEffect(() => {
+        refreshUser();
+    }, [refreshUser]);
 
     const logout = async () => {
         try {
@@ -40,13 +61,13 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
             if (typeof window !== 'undefined') {
                 document.cookie = 'accessToken=; Max-Age=0; path=/';
             }
-            setUser(null);
+            setAuthenticatedUser(null);
         } catch (error) {
             console.error('Logout failed:', error);
         }
     };
 
-    const value = { user, loading, logout };
+    const value = { user, loading, logout, refreshUser, setAuthenticatedUser };
 
     return (
         <AuthContext.Provider value={value}>
