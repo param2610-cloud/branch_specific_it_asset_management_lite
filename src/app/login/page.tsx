@@ -17,19 +17,21 @@ const LoginPage = () => {
   const [ showPassword, setShowPassword ] = useState(false);
   const router = useRouter();
   const auth = useContext(AuthContext);
+  const authLoading = auth?.loading ?? false;
+  const authenticatedUser = auth?.user ?? null;
 
-    useEffect(() => {
-      if (!auth) return;
-      if (auth.loading) {
-        setIsLoading(true);
-        return;
-      }
+  useEffect(() => {
+    if (!auth) return;
+    if (authLoading) {
+      setIsLoading(true);
+      return;
+    }
 
-      setIsLoading(false);
-      if (auth.user) {
-        router.replace('/dashboard');
-      }
-    }, [auth, router]);
+    setIsLoading(false);
+    if (authenticatedUser) {
+      router.replace('/dashboard');
+    }
+  }, [auth, authLoading, authenticatedUser, router]);
   const handleUsernameSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (username.trim() === '') {
@@ -64,10 +66,12 @@ const LoginPage = () => {
         password,
       }, { withCredentials: true });
       if (response.status === 200) {
-        if (auth) {
-          await auth.refreshUser();
+        if (auth?.refreshUser) {
+          const refreshedUser = await auth.refreshUser();
+          if (!refreshedUser) {
+            setError('Could not load your profile. Please try again.');
+          }
         }
-        router.replace('/dashboard');
         return;
       }
     } catch (err: unknown) {
