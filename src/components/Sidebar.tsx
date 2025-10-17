@@ -7,11 +7,13 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { AuthContext } from '@/context/AuthContext';
 import axios from 'axios';
+import { DocumentIcon } from '@heroicons/react/24/solid';
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
   { name: 'Assets', href: '/dashboard/assets', icon: ComputerDesktopIcon },
   { name: 'Users', href: '/dashboard/users', icon: UsersIcon },
+  { name: 'Export', href: '/dashboard/export', icon: DocumentIcon },
 ];
 
 const Sidebar = () => {
